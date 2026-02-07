@@ -9,7 +9,8 @@ config/api_keys.env
 run_insecure.sh
 logs/
 logs_backup_2/
-logs_*
+/logs_*
+!/logs_parser/
 .gemini/
 __pycache__/
 src/**/__pycache__/
