@@ -1,0 +1,87 @@
+% TMLR submission template — built by Pandoc from Markdown source.
+\documentclass[10pt]{article}
+\usepackage{tmlr}
+% For camera-ready: \usepackage[accepted]{tmlr}
+% For preprint: \usepackage[preprint]{tmlr}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
+
+% Unicode character mappings for pdflatex
+\DeclareUnicodeCharacter{00B0}{\textdegree}
+\DeclareUnicodeCharacter{00B2}{\textsuperscript{2}}
+\DeclareUnicodeCharacter{00D7}{\ensuremath{\times}}
+\DeclareUnicodeCharacter{0394}{\ensuremath{\Delta}}
+\DeclareUnicodeCharacter{2013}{--}
+\DeclareUnicodeCharacter{2019}{'}
+\DeclareUnicodeCharacter{201C}{``}
+\DeclareUnicodeCharacter{201D}{''}
+\DeclareUnicodeCharacter{2192}{\ensuremath{\rightarrow}}
+\DeclareUnicodeCharacter{21D2}{\ensuremath{\Rightarrow}}
+\DeclareUnicodeCharacter{2248}{\ensuremath{\approx}}
+
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\setkeys{Gin}{width=\linewidth,height=0.9\textheight,keepaspectratio}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{calc}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue
+}
+
+% Pandoc emits \tightlist for compact lists.
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% Bibliography handled by natbib + bibtex (tmlr.bst).
+
+$if(highlighting-macros)$
+$highlighting-macros$
+$endif$
+
+$for(header-includes)$
+$header-includes$
+$endfor$
+
+% TMLR title
+$if(title)$
+\title{$title$}
+$endif$
+
+% Authors hidden for anonymous submission.
+% Uncomment and fill in for camera-ready.
+% \author{\name Anonymous \email anonymous@example.com \\
+%       \addr Anonymous Institution}
+
+\def\month{MM}
+\def\year{YYYY}
+\def\openreview{\url{https://openreview.net/forum?id=XXXX}}
+
+\begin{document}
+
+\maketitle
+
+$if(abstract)$
+\begin{abstract}
+$abstract$
+\end{abstract}
+$endif$
+
+$body$
+
+\bibliographystyle{tmlr}
+\bibliography{refs}
+
+\end{document}

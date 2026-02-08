@@ -1,0 +1,175 @@
+\begin{thebibliography}{23}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Aky{\"u}rek et~al.(2025)Aky{\"u}rek, Damani, Zweiger, Qiu, Guo, Pari,
+  Kim, and Andreas]{akyurek2024surprising}
+Ekin Aky{\"u}rek, Mehul Damani, Adam Zweiger, Linlu Qiu, Han Guo, Jyothish
+  Pari, Yoon Kim, and Jacob Andreas.
+\newblock The surprising effectiveness of test-time training for few-shot
+  learning.
+\newblock In \emph{Proceedings of the 42nd International Conference on Machine
+  Learning}, volume 267 of \emph{PMLR}, pp.\  942--963, 2025.
+
+\bibitem[Besta et~al.(2024)Besta, Blach, Kubicek, Gerstenberger, Podstawski,
+  Gianinazzi, Gajber, Lehmann, Niewiadomski, Nyczyk, and
+  Hoefler]{besta2024graph}
+Maciej Besta, Nils Blach, Ales Kubicek, Robert Gerstenberger, Michal
+  Podstawski, Lukas Gianinazzi, Joanna Gajber, Tomasz Lehmann, Hubert
+  Niewiadomski, Piotr Nyczyk, and Torsten Hoefler.
+\newblock Graph of thoughts: Solving elaborate problems with large language
+  models.
+\newblock In \emph{Proceedings of the AAAI Conference on Artificial
+  Intelligence}, volume~38, 2024.
+
+\bibitem[Chollet(2019)]{chollet2019measure}
+Fran{\c{c}}ois Chollet.
+\newblock On the measure of intelligence.
+\newblock \emph{arXiv preprint arXiv:1911.01547}, 2019.
+
+\bibitem[Chollet et~al.(2024)Chollet, Knoop, Kamradt, and
+  Landers]{arcprize2024report}
+Fran{\c{c}}ois Chollet, Mike Knoop, Gregory Kamradt, and Bryan Landers.
+\newblock {ARC Prize 2024}: Technical report.
+\newblock \emph{arXiv preprint arXiv:2412.04604}, 2024.
+
+\bibitem[Ferr{\'e}(2021)]{ferre2021arc}
+S{\'e}bastien Ferr{\'e}.
+\newblock First steps of an approach to the {ARC} challenge based on
+  descriptive grid models and the minimum description length principle.
+\newblock \emph{arXiv preprint arXiv:2112.00848}, 2021.
+
+\bibitem[Fletcher-Hill(2024)]{fletcherhill2024miniarc}
+Paul Fletcher-Hill.
+\newblock Mini-{ARC}: Solving abstraction and reasoning puzzles with small
+  transformer models, 2024.
+\newblock ARC Prize 2024 Paper Award Runner-Up. Available at
+  \url{https://www.paulfletcherhill.com/mini-arc.pdf}.
+
+\bibitem[Gao et~al.(2023)Gao, Madaan, Zhou, Alon, Liu, Yang, Callan, and
+  Neubig]{gao2023pal}
+Luyu Gao, Aman Madaan, Shuyan Zhou, Uri Alon, Pengfei Liu, Yiming Yang, Jamie
+  Callan, and Graham Neubig.
+\newblock {PAL}: Program-aided language models.
+\newblock \emph{International Conference on Machine Learning}, 2023.
+
+\bibitem[Hodel(2024)]{hodel2024rearc}
+Michael Hodel.
+\newblock Addressing the abstraction and reasoning corpus via procedural
+  example generation.
+\newblock \emph{arXiv preprint arXiv:2404.07353}, 2024.
+
+\bibitem[Li et~al.(2025)Li, Hu, Larsen, Wu, Alford, Woo, Dunn, Tang, Naim,
+  Nguyen, Zheng, Tavares, Pu, and Ellis]{li2024induction}
+Wen-Ding Li, Keya Hu, Carter Larsen, Yuqing Wu, Simon Alford, Caleb Woo,
+  Spencer~M. Dunn, Hao Tang, Michelangelo Naim, Dat Nguyen, Wei-Long Zheng,
+  Zenna Tavares, Yewen Pu, and Kevin Ellis.
+\newblock Combining induction and transduction for abstract reasoning.
+\newblock In \emph{International Conference on Learning Representations}, 2025.
+
+\bibitem[Macfarlane \& Bonnet(2025)Macfarlane and Bonnet]{bonnet2024latent}
+Matthew~V. Macfarlane and Cl{\'e}ment Bonnet.
+\newblock Searching latent program spaces.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+  volume~38, 2025.
+
+\bibitem[Madaan et~al.(2023)Madaan, Tandon, Gupta, Hallinan, Gao, Wiegreffe,
+  Alon, Dziri, Prabhumoye, Yang, Gupta, Majumder, Hermann, Welleck,
+  Yazdanbakhsh, and Clark]{madaan2023selfrefine}
+Aman Madaan, Niket Tandon, Prakhar Gupta, Skyler Hallinan, Luyu Gao, Sarah
+  Wiegreffe, Uri Alon, Nouha Dziri, Shrimai Prabhumoye, Yiming Yang, Shashank
+  Gupta, Bodhisattwa~Prasad Majumder, Katherine Hermann, Sean Welleck, Amir
+  Yazdanbakhsh, and Peter Clark.
+\newblock Self-refine: Iterative refinement with self-feedback.
+\newblock \emph{Advances in Neural Information Processing Systems}, 36, 2023.
+
+\bibitem[Moffitt(2025)]{moffitt2025arcgen}
+Michael~D. Moffitt.
+\newblock {ARC-GEN}: A mimetic procedural benchmark generator for the
+  abstraction and reasoning corpus.
+\newblock \emph{arXiv preprint arXiv:2511.00162}, 2025.
+
+\bibitem[Moskvichev et~al.(2023)Moskvichev, Odouard, and
+  Mitchell]{moskvichev2023conceptarc}
+Arseny Moskvichev, Victor~Vikram Odouard, and Melanie Mitchell.
+\newblock The {ConceptARC} benchmark: Evaluating understanding and
+  generalization in the {ARC} domain.
+\newblock \emph{Transactions on Machine Learning Research}, 2023.
+
+\bibitem[Ouellette(2024)]{ouellette2024neurally}
+Simon Ouellette.
+\newblock Towards efficient neurally-guided program induction for {ARC-AGI}.
+\newblock \emph{arXiv preprint arXiv:2411.17708}, 2024.
+
+\bibitem[Puget(2024)]{puget2024nGPT}
+Jean-Fran{\c{c}}ois Puget.
+\newblock A {2D} {nGPT} model for {ARC} prize, 2024.
+\newblock ARC Prize 2024 Paper Award Runner-Up. Available at
+  \url{https://github.com/jfpuget/ARC-AGI-Challenge-2024/blob/main/arc.pdf}.
+
+\bibitem[Schick et~al.(2023)Schick, Dwivedi-Yu, Dess{\`i}, Raileanu, Lomeli,
+  Zettlemoyer, Cancedda, and Scialom]{schick2023toolformer}
+Timo Schick, Jane Dwivedi-Yu, Roberto Dess{\`i}, Roberta Raileanu, Maria
+  Lomeli, Luke Zettlemoyer, Nicola Cancedda, and Thomas Scialom.
+\newblock Toolformer: Language models can teach themselves to use tools.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+  volume~36, 2023.
+
+\bibitem[Shinn et~al.(2023)Shinn, Cassano, Gopinath, Narasimhan, and
+  Yao]{shinn2023reflexion}
+Noah Shinn, Federico Cassano, Ashwin Gopinath, Karthik Narasimhan, and Shunyu
+  Yao.
+\newblock Reflexion: Language agents with verbal reinforcement learning.
+\newblock \emph{Advances in Neural Information Processing Systems}, 36, 2023.
+
+\bibitem[Snell et~al.(2025)Snell, Lee, Xu, and Kumar]{snell2024scaling}
+Charlie Snell, Jaehoon Lee, Kelvin Xu, and Aviral Kumar.
+\newblock Scaling {LLM} test-time compute optimally can be more effective than
+  scaling model parameters.
+\newblock In \emph{International Conference on Learning Representations}, 2025.
+
+\bibitem[Wang et~al.(2023)Wang, Wei, Schuurmans, Le, Chi, Narang, Chowdhery,
+  and Zhou]{wang2022selfconsistency}
+Xuezhi Wang, Jason Wei, Dale Schuurmans, Quoc Le, Ed~Chi, Sharan Narang,
+  Aakanksha Chowdhery, and Denny Zhou.
+\newblock Self-consistency improves chain of thought reasoning in language
+  models.
+\newblock In \emph{International Conference on Learning Representations}, 2023.
+
+\bibitem[Wei et~al.(2022)Wei, Wang, Schuurmans, Bosma, Ichter, Xia, Chi, Le,
+  and Zhou]{wei2022chain}
+Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Brian Ichter, Fei Xia,
+  Ed~Chi, Quoc Le, and Denny Zhou.
+\newblock Chain-of-thought prompting elicits reasoning in large language
+  models.
+\newblock \emph{Advances in Neural Information Processing Systems}, 35, 2022.
+
+\bibitem[Yao et~al.(2023{\natexlab{a}})Yao, Yu, Zhao, Shafran, Griffiths, Cao,
+  and Narasimhan]{yao2023tree}
+Shunyu Yao, Dian Yu, Jeffrey Zhao, Izhak Shafran, Thomas~L. Griffiths, Yuan
+  Cao, and Karthik Narasimhan.
+\newblock Tree of thoughts: Deliberate problem solving with large language
+  models.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+  volume~36, 2023{\natexlab{a}}.
+
+\bibitem[Yao et~al.(2023{\natexlab{b}})Yao, Zhao, Yu, Du, Shafran, Narasimhan,
+  and Cao]{yao2022react}
+Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan,
+  and Yuan Cao.
+\newblock {ReAct}: Synergizing reasoning and acting in language models.
+\newblock \emph{International Conference on Learning Representations},
+  2023{\natexlab{b}}.
+
+\bibitem[Zheng et~al.(2023)Zheng, Chiang, Sheng, Zhuang, Wu, Zhuang, Lin, Li,
+  Li, Xing, Zhang, Gonzalez, and Stoica]{zheng2023judging}
+Lianmin Zheng, Wei-Lin Chiang, Ying Sheng, Siyuan Zhuang, Zhanghao Wu, Yonghao
+  Zhuang, Zi~Lin, Zhuohan Li, Dacheng Li, Eric~P. Xing, Hao Zhang, Joseph~E.
+  Gonzalez, and Ion Stoica.
+\newblock Judging {LLM}-as-a-judge with {MT-Bench} and {Chatbot Arena}.
+\newblock \emph{Advances in Neural Information Processing Systems}, 36, 2023.
+
+\end{thebibliography}

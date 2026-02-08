@@ -1,0 +1,12 @@
+title: "Modality-Driven Search with Holistic Trace Judging for ARC-AGI-2"
+author: "Anonymous"
+date: "2026"
+keywords:
+  - ARC
+  - ARC-AGI-2
+  - large language models
+  - multimodal reasoning
+  - program synthesis
+  - LLM-as-a-judge
+abstract: |
+  Large language models (LLMs) can generate convincing reasoning traces for abstract reasoning tasks while still being confidently wrong. The core challenge is therefore not only generating solutions, but reliably distinguishing correct from incorrect solutions in the presence of persuasive overclaiming, including within detailed traces. We introduce a solver for ARC-AGI-2 built around two principles: (i) modality-driven candidate generation across independent reasoning channels (text, images, and code with tool-use) to produce diverse candidate solutions, and (ii) context-preserving holistic judging that evaluates all candidate traces jointly in one prompt to identify the most likely correct outputs, including the common case on hard tasks where the correct solution is not the majority hypothesis. On the ARC Prize semi-private evaluation set (used for the official leaderboard), this solver achieves 72.9% solved at $38.99/task --- the highest score on the ARC-AGI-2 Verified leaderboard at the time of submission, exceeding the next-best entry by +18.7 percentage points. On the public evaluation set, it achieves 76.11% solved at $19.69/task (self-measured). We release the full source code and document negative results showing which common prompting and decomposition strategies reduced diversity and hurt performance.

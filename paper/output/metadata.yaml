@@ -1,0 +1,14 @@
+title: "Modality-Driven Search with Holistic Trace Judging for ARC-AGI-2"
+author: "Johan Land"
+date: "2026-02-03"
+keywords:
+  - ARC
+  - ARC-AGI-2
+  - large language models
+  - multimodal reasoning
+  - program synthesis
+  - LLM-as-a-judge
+abstract: |
+  Large language models can produce fluent, internally coherent reasoning traces for abstract reasoning tasks while still being confidently wrong — making selection among candidates, not just generation, the central challenge. I present a solver for ARC-AGI-2 (a few-shot visual reasoning benchmark) built around two principles: (i) treating reasoning modalities as search operators, generating diverse candidates independently across text, image, and code channels, and (ii) context-preserving holistic judging, in which a judge model jointly compares all candidate reasoning traces within a single long-context prompt. Unlike self-consistency or majority voting, this approach reliably recovers correct minority hypotheses on tasks where the modal answer is wrong.
+
+  On the ARC Prize semi-private evaluation set, the solver achieves 72.9% at $38.99/task — the highest score on the verified leaderboard at the time of writing, exceeding the best standalone frontier models (GPT-5.2 Pro at 54.2%, Gemini 3 Pro at 54.0%) by +18.7 percentage points. On the public evaluation set, it achieves 76.1% at $19.69/task. I release the full source code and document extensive negative results, including the finding that prescriptive prompting templates and iterative refinement systematically reduce hypothesis diversity and degrade performance.

@@ -1,0 +1,8 @@
+## Introduction
+
+A central challenge in applying LLMs to abstract reasoning is not just producing candidate solutions, but **knowing what is right and what is wrong** in a setting where models can be confidently incorrect --- even when they provide detailed, plausible reasoning traces. ARC-AGI-2 [@arcprize2024report] was designed to be *easy for humans and hard for AI*, and --- critically --- to measure both **capability** and **efficiency** (cost).
+
+This paper describes an approach that treats **modalities as search operators** and uses **judging as the final selection mechanism**: generate diverse candidate solutions across independent reasoning channels (text, image, and code with tool-use), then select among them using a context-preserving holistic judge that reads all candidate traces jointly. Unlike standard self-consistency (majority vote) or per-candidate scoring, this judge identifies correct *minority* hypotheses by comparing full reasoning traces in a single context window --- yielding +7 solved instances over majority vote at only 13% of total system cost.
+
+On the ARC Prize semi-private evaluation set, this solver achieves **72.9%** at $38.99/task --- the highest score on the ARC-AGI-2 Verified leaderboard at the time of submission, exceeding the next-best entry by +18.7 percentage points. On the public evaluation set, it achieves **76.11%** at $19.69/task (self-measured). The full source code and public-evaluation run data are released.^[Anonymized for review.] This paper also documents negative results showing which common prompting and decomposition strategies reduced diversity and hurt performance.
+
