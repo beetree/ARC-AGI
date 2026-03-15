@@ -28,6 +28,8 @@
 \usepackage{longtable}
 \usepackage{array}
 \usepackage{float}
+\usepackage{fvextra}
+\usepackage{framed}
 \usepackage{caption}
 \usepackage{xcolor}
 \usepackage{hyperref}
@@ -39,6 +41,7 @@
   citecolor=blue,
   urlcolor=blue
 }
+\definecolor{shadecolor}{gray}{0.95}
 
 % Pandoc emits \tightlist for compact lists in some outputs.
 \providecommand{\tightlist}{%
@@ -67,6 +70,15 @@ $endif$
 $if(highlighting-macros)$
 $highlighting-macros$
 $endif$
+
+\RecustomVerbatimEnvironment{Highlighting}{Verbatim}{
+  commandchars=\\\{\},
+  breaklines,
+  breakanywhere=true,
+  breaksymbolleft={},
+  fontsize=\footnotesize
+}
+\renewenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
 
 $for(header-includes)$
 $header-includes$

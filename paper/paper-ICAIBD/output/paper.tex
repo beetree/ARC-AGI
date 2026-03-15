@@ -1,8 +1,22 @@
 \documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
 \usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{float}
+\usepackage{fvextra}
+\usepackage{framed}
+\usepackage{hyperref}
+\usepackage{calc}
+\setkeys{Gin}{width=\linewidth,height=0.9\textheight,keepaspectratio}
 
 % Pandoc may emit some Unicode punctuation/symbols directly. Map common ones for pdflatex.
 \DeclareUnicodeCharacter{00B0}{\textdegree}
@@ -10,6 +24,7 @@
 \DeclareUnicodeCharacter{00D7}{\ensuremath{\times}}
 \DeclareUnicodeCharacter{0394}{\ensuremath{\Delta}}
 \DeclareUnicodeCharacter{2013}{--}
+\DeclareUnicodeCharacter{2014}{---}
 \DeclareUnicodeCharacter{2019}{'}
 \DeclareUnicodeCharacter{201C}{``}
 \DeclareUnicodeCharacter{201D}{''}
@@ -17,26 +32,11 @@
 \DeclareUnicodeCharacter{21D2}{\ensuremath{\Rightarrow}}
 \DeclareUnicodeCharacter{2248}{\ensuremath{\approx}}
 
-\usepackage{amsmath,amssymb}
-\usepackage{graphicx}
-\setkeys{Gin}{width=\linewidth,height=0.9\textheight,keepaspectratio}
-\usepackage{booktabs}
-\usepackage{longtable}
-% Pandoc emits longtable which is incompatible with two-column mode.
-% Add a post-processing step in build_paper.py to replace longtable with tabular.
-\usepackage{array}
-\usepackage{float}
-\usepackage{caption}
-\usepackage{xcolor}
-\usepackage{hyperref}
-\usepackage{calc}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
-\hypersetup{
-  colorlinks=true,
-  linkcolor=black,
-  citecolor=black,
-  urlcolor=blue
-}
+\hypersetup{hidelinks}
+\definecolor{shadecolor}{gray}{0.95}
 
 % Pandoc emits \tightlist for compact lists in some outputs.
 \providecommand{\tightlist}{%
@@ -99,6 +99,15 @@
 \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
 \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
 
+\RecustomVerbatimEnvironment{Highlighting}{Verbatim}{
+  commandchars=\\\{\},
+  breaklines,
+  breakanywhere=true,
+  breaksymbolleft={},
+  fontsize=\footnotesize
+}
+\renewenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+
 
 \begin{document}
 
@@ -137,6 +146,11 @@ refinement systematically reduce hypothesis diversity and degrade
 performance.
 \end{abstract}
 
+\begin{IEEEkeywords}
+ARC, ARC-AGI-2, large language models, multimodal reasoning, program
+synthesis, LLM-as-a-judge
+\end{IEEEkeywords}
+
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
 
@@ -150,16 +164,16 @@ and---critically---to measure both \textbf{capability} and
 \textbf{efficiency} (cost). Progress on ARC-style benchmarks has been
 rapid: ARC Prize reports significant year-over-year improvements driven
 by frontier reasoning systems and application-layer refinement harnesses
-(Chollet et al. 2024).
+{[}1{]}.
 
-This paper describes an approach that treats \textbf{modalities as
-search operators} and uses \textbf{judging as the final selection
+This paper describes an ARC-AGI-2 solver that treats \textbf{modalities
+as search operators} and uses \textbf{judging as the final selection
 mechanism}: generate diverse candidate solutions across independent
 reasoning channels, then select among them using context-preserving
 holistic judging.\footnote{An extended version of this paper with
   complete failure analysis, task-level breakdowns, judge rationale
   transcripts, and additional ablation details is available as a
-  preprint (Land 2026).}
+  preprint {[}2{]}.}
 
 \hypertarget{contributions}{%
 \subsection{Contributions}\label{contributions}}
@@ -167,13 +181,15 @@ holistic judging.\footnote{An extended version of this paper with
 \begin{itemize}
 \tightlist
 \item
-  \textbf{A modality-driven search solver} that generates candidates
-  independently across text, image, and code reasoning channels.
+  \textbf{A modality-driven search solver for ARC-AGI-2} that generates
+  candidates independently across text, image, and code reasoning
+  channels.
 \item
-  \textbf{A context-preserving holistic judge} that reads all candidate
-  traces jointly to select the best outputs, identifying correct
-  \emph{minority} hypotheses---yielding +7 solved instances over
-  majority vote at only 13\% of total system cost (Section V).
+  \textbf{A context-preserving holistic judge in this setting} that
+  reads all candidate traces jointly to select the best outputs,
+  identifying correct \emph{minority} hypotheses---yielding +7 solved
+  instances over majority vote at only 13\% of total system cost
+  (Section V).
 \item
   \textbf{Verified ARC-AGI-2 semi-private performance:} 72.9\% at
   \$38.99/task on the ARC Prize Verified leaderboard\footnote{https://arcprize.org/leaderboard}---the
@@ -184,11 +200,9 @@ holistic judging.\footnote{An extended version of this paper with
   \textbf{Public eval performance:} 76.11\% at \$19.69/task
   (self-measured).
 \item
-  \textbf{Open-source release} of the full source code\footnote{https://github.com/beetree/ARC-AGI}
-  plus detailed negative results. The complete public-evaluation run
-  data---over 7 million lines of prompts, responses, reasoning traces,
-  and judge transcripts---is also released\footnote{https://www.kaggle.com/code/johanland/johan-land-solver-v7-public/comments?scriptVersionId=290052212}
-  to support future research.
+  \textbf{Open-source release} of the full source code, detailed
+  negative results, and complete public-evaluation run data to support
+  future research.
 \end{itemize}
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
@@ -197,18 +211,18 @@ holistic judging.\footnote{An extended version of this paper with
 \section{Background and Related
 Work}\label{background-and-related-work}}
 
-The Abstraction and Reasoning Corpus (ARC) was introduced by Chollet
-(2019) as a benchmark for measuring intelligence as skill-acquisition
+The Abstraction and Reasoning Corpus (ARC) was introduced by {[}3{]} as
+a benchmark for measuring intelligence as skill-acquisition
 efficiency---how effectively a system acquires new skills under
 constrained experience and priors. Tasks are framed as few-shot
 input--output induction over grids: given a handful of training
 demonstration pairs, the solver must infer an underlying transformation
-rule and apply it to a held-out test input. ARC-AGI-2 (Chollet et al.
-2024) extends the original benchmark with harder tasks, formalized
-dataset splits (training, public, semi-private, and private evaluation
-sets of calibrated tasks), pass@2 scoring, first-party human
-calibration, and an emphasis on both accuracy and cost efficiency. Fig.
-2 illustrates a representative task.
+rule and apply it to a held-out test input. ARC-AGI-2 {[}1{]} extends
+the original benchmark with harder tasks, formalized dataset splits
+(training, public, semi-private, and private evaluation sets of
+calibrated tasks), pass@2 scoring, first-party human calibration, and an
+emphasis on both accuracy and cost efficiency. Fig. 2 illustrates a
+representative task.
 
 \begin{figure}
 \centering
@@ -222,37 +236,33 @@ unsolved by the system.}
 \end{figure}
 
 Classical ARC solvers treat tasks as latent programs composed from a
-hand-designed DSL (Ferré 2021). Learned approaches attack ARC via
-induction or transduction; Li et al. (2025) show that ensembling both
-paradigms can approach human-level performance. Test-time adaptation has
-emerged as a major axis: Akyürek et al. (2025) demonstrate that updating
-model parameters at test time yields strong gains, while Macfarlane and
-Bonnet (2025) combine learned representations with explicit program
-search.
+hand-designed DSL {[}4{]}. Learned approaches attack ARC via induction
+or transduction; {[}5{]} show that ensembling both paradigms can
+approach human-level performance. Test-time adaptation has emerged as a
+major axis: {[}6{]} demonstrate that updating model parameters at test
+time yields strong gains, while {[}7{]} combine learned representations
+with explicit program search.
 
 The broader LLM literature has developed test-time compute techniques
-directly relevant to this work. Chain-of-thought prompting (Wei et al.
-2022) elicits intermediate reasoning steps; self-consistency (Wang et
-al. 2023) samples multiple paths and selects the most common answer.
-Tree of Thoughts (Yao, Yu, et al. 2023) reframes inference as search
-with branching and backtracking. ReAct (Yao, Zhao, et al. 2023)
-interleaves reasoning with tool calls, and PAL (Gao et al. 2023)
+directly relevant to this work. Chain-of-thought prompting {[}8{]}
+elicits intermediate reasoning steps; self-consistency {[}9{]} samples
+multiple paths and selects the most common answer. Tree of Thoughts
+{[}10{]} reframes inference as search with branching and backtracking.
+ReAct {[}11{]} interleaves reasoning with tool calls, and PAL {[}12{]}
 translates problems into executable code. Iterative-refinement methods
-(Madaan et al. 2023; Shinn et al. 2023) improve outputs through feedback
-loops but risk anchoring to early hypotheses. Snell et al. (2025) show
-that optimally allocating test-time compute can be more effective than
-scaling model parameters.
+{[}13{]}, {[}14{]} improve outputs through feedback loops but risk
+anchoring to early hypotheses. {[}15{]} show that optimally allocating
+test-time compute can be more effective than scaling model parameters.
 
 Relative to this landscape, the present work composes three trends: (i)
 hypothesis generation as explicit search across \emph{multiple reasoning
-modalities}, extending ToT-style inference (Yao, Yu, et al. 2023); (ii)
-tool- and program-mediated reasoning (Yao, Zhao, et al. 2023; Gao et al.
-2023) used to produce richer intermediate artifacts for downstream
-selection; and (iii) judge-based selection adapted from the
-LLM-as-a-judge paradigm (Zheng et al. 2023). What is distinctive is the
-combination of heterogeneous candidate generators with
-context-preserving comparison over full reasoning traces, rather than
-scalar scoring or consensus compression.
+modalities}, extending ToT-style inference {[}10{]}; (ii) tool- and
+program-mediated reasoning {[}11{]}, {[}12{]} used to produce richer
+intermediate artifacts for downstream selection; and (iii) judge-based
+selection adapted from the LLM-as-a-judge paradigm {[}16{]}. What is
+distinctive is the combination of heterogeneous candidate generators
+with context-preserving comparison over full reasoning traces, rather
+than scalar scoring or consensus compression.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
@@ -285,30 +295,27 @@ Fig. 2 shows the end-to-end pipeline. For each ARC task:
 \def\labelenumi{\arabic{enumi}.}
 \item
   \textbf{Candidate generation (up to 29 candidates).} A set of
-  modality-specific solvers is run, each producing a single predicted
-  output grid, a reasoning trace, and --- for code-generation candidates
-  --- the code itself along with tool calls and execution logs. Each
-  candidate produces one output; the pass@2 two-guess format is
-  introduced only at the judging stage (step 2). Candidate generation
-  proceeds in stages: if early-stage candidates already show strong
-  agreement (multiple candidates converging on the same output), the
-  system terminates early and skips the remaining, more expensive
-  modalities. This adaptive early stopping improves cost efficiency on
-  tasks that can be solved with a shallower search. On ARC-AGI-1 (which
-  contains easier tasks that more frequently trigger early stopping),
-  the system achieves 94.5\% on the official semi-private evaluation at
-  only \$11.40/task --- substantially cheaper than the \$38.99/task on
-  ARC-AGI-2, where harder tasks require the full candidate budget more
-  often. Both semi-private scores and costs are as reported by ARC
-  Prize's verification infrastructure. On the ARC-AGI-2 public
-  evaluation, 37 of 167 instances triggered early stopping (evaluated
-  with only 8 candidates instead of 29); of these, \textbf{36 were
-  solved correctly} (97.3\% accuracy). The single early-stopping failure
-  (\texttt{dbff022c:1}) is a case of extreme groupthink: all models
-  confidently assume the simpler of two valid interpretations of a
-  legend-to-color mapping, while the ground truth requires the more
-  complex one. This validates the heuristic on easy tasks, but also
-  illustrates that early consensus can mask genuine ambiguity.
+  modality-specific solvers is run, each producing a predicted output
+  grid, a reasoning trace, and, for code candidates, the code plus
+  tool-use logs. Each candidate produces one output; the pass@2
+  two-guess format is introduced only at the judging stage. Candidate
+  generation proceeds in stages: if early candidates already show strong
+  agreement, the system terminates early and skips the remaining, more
+  expensive modalities. This adaptive early stopping improves cost
+  efficiency on tasks that can be solved with a shallower search. On the
+  ARC-AGI-2 public evaluation, 37 of 167 instances stopped after the
+  initial 8-candidate probe, and \textbf{36 of those 37 were solved
+  correctly} (97.3\%), showing that shallow search is often sufficient
+  on easier tasks. The same principle is even more effective on easier
+  ARC-AGI-1 tasks, where the system achieves 94.5\% on the official
+  semi-private evaluation at only \$11.40/task, substantially cheaper
+  than the \$38.99/task on ARC-AGI-2. Both semi-private scores and costs
+  are as reported by ARC Prize's verification infrastructure. The single
+  early-stopping failure (\texttt{dbff022c:1}) is a case of extreme
+  groupthink: all models confidently assume the simpler of two valid
+  legend-to-color interpretations while the ground truth requires the
+  more complex one. This validates the heuristic on easy tasks, but also
+  shows that early consensus can mask genuine ambiguity.
 \item
   \textbf{Holistic judging (3 parallel judges).} All candidate traces
   are concatenated into a single long-context prompt. Each judge model
@@ -482,14 +489,14 @@ judging approaches were tested:
 \end{enumerate}
 
 The holistic judge can be understood as an \textbf{anti-consistency}
-mechanism. Self-consistency (Wang et al. 2023) selects the most common
-answer across samples --- an effective strategy when the majority is
-likely correct. On ARC-AGI-2, the majority is often \emph{wrong} on the
-hardest tasks (Section IV-F), making consistency-based selection a
-liability. The holistic judge inverts this: it is designed to identify a
-correct \emph{minority} hypothesis against a confidently wrong majority,
-using full-trace comparison to distinguish genuine insight from
-plausible groupthink.
+mechanism. Self-consistency {[}9{]} selects the most common answer
+across samples --- an effective strategy when the majority is likely
+correct. On ARC-AGI-2, the majority is often \emph{wrong} on the hardest
+tasks (Section IV-F), making consistency-based selection a liability.
+The holistic judge inverts this: it is designed to identify a correct
+\emph{minority} hypothesis against a confidently wrong majority, using
+full-trace comparison to distinguish genuine insight from plausible
+groupthink.
 
 All three judges use \textbf{GPT-5.2} (x-high reasoning setting), the
 same model used for candidate generation but in a distinct role with a
@@ -549,8 +556,8 @@ guesses. When judges agree on their top pick, that solution accumulates
 up to 6 points; when they disagree, the scoring naturally surfaces the
 most broadly supported candidates. A known limitation is that candidate
 traces are concatenated in a fixed order without shuffling between judge
-runs, which may interact with LLM position biases (Zheng et al. 2023);
-shuffling candidate order across runs is a natural improvement.
+runs, which may interact with LLM position biases {[}16{]}; shuffling
+candidate order across runs is a natural improvement.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
@@ -561,9 +568,9 @@ shuffling candidate order across runs is a natural improvement.
 \subsection{Evaluation Protocol}\label{evaluation-protocol}}
 
 ARC-AGI-2 provides public, semi-private, and private evaluation sets,
-all calibrated and scored under \textbf{pass@2} (Chollet et al. 2024).
-ARC Prize Verified results are reported on the semi-private evaluation
-set via an official verification process and leaderboard. The solver was
+all calibrated and scored under \textbf{pass@2} {[}1{]}. ARC Prize
+Verified results are reported on the semi-private evaluation set via an
+official verification process and leaderboard. The solver was
 iteratively developed using the 1,000-task training set and the 120-task
 public evaluation split; the semi-private evaluation was run on held-out
 tasks unseen during development, and the \textasciitilde3
@@ -657,52 +664,47 @@ numbers.
 \hypertarget{efficiency}{%
 \subsection{Efficiency}\label{efficiency}}
 
-ARC-AGI-2 explicitly evaluates efficiency (Chollet et al. 2024). The
-roughly 2x cost difference between the semi-private and public runs
-(\$38.99 vs.~\$19.69) is largely attributable to API-level
-unreliability: on the public-eval run, only 2,216 of 14,106 GPT-5.2 API
-attempts succeeded (84\% failure rate due to rate limits, timeouts, and
-server errors). The public-eval cost of \$19.69/task is a more
-representative measure; at this cost, the solver is comparable to
-GPT-5.2 Pro (\$15.72/task) while achieving a +21.9 percentage-point
-accuracy gain, and is both cheaper and more accurate than Gemini 3 Pro
-(\$30.57/task at 54.0\%). A detailed cost breakdown is provided in
-Section V.
+ARC-AGI-2 explicitly evaluates efficiency {[}1{]}. The roughly 2x cost
+difference between the semi-private and public runs (\$38.99
+vs.~\$19.69) is largely attributable to API-level unreliability: on the
+public-eval run, only 2,216 of 14,106 GPT-5.2 API attempts succeeded
+(84\% failure rate due to rate limits, timeouts, and server errors). The
+public-eval cost of \$19.69/task is a more representative measure; at
+this cost, the solver is comparable to GPT-5.2 Pro (\$15.72/task) while
+achieving a +21.9 percentage-point accuracy gain, and is both cheaper
+and more accurate than Gemini 3 Pro (\$30.57/task at 54.0\%). A detailed
+cost breakdown is provided in Section V.
 
 \hypertarget{modality-contribution}{%
 \subsection{Modality Contribution}\label{modality-contribution}}
 
-The final modality mix was selected based on two criteria: raw solve
-contribution and diversity contribution (uniquely solved tasks that
-other modalities fail). GPT dominates code generation, with Gemini
-adding meaningful diversity; for image reasoning, Gemini and GPT behave
-differently and are complementary; Opus is exceptional for end-to-end
-text reasoning, being the sole solver for several tasks via text-only
-reasoning. Over the 167 public-evaluation test instances, the final
-system solves 128/167 = 76.65\% at the instance level (pass@2). The
-candidate pool contains at least one correct output for 144/167 =
-86.23\% of instances (candidate-oracle accuracy). The 39 unsolved
-instances decompose into 21/167 generation failures where no candidate
-in the pool is correct (with full 29-candidate coverage), 1/167
-early-stopping failure where consensus among the initial 8 candidates
-was incorrect (Section III), and 17/167 selection failures where at
-least one correct candidate exists but is not chosen by the judge.
-Notably, there is one instance where the final output is correct despite
-\textbf{zero} candidates matching ground truth (\texttt{21897d95:2});
-this occurs via judge synthesis (Section IV-F). Generation failures tend
-to involve long chains of dependent reasoning steps where all candidates
-make errors at different points in the chain; selection failures cluster
-around cases where the test instance introduces a new mechanic not fully
-disambiguated by training examples, creating genuine ambiguity that the
-judge cannot resolve.
+The final modality mix was selected based on both raw solve contribution
+and diversity contribution (uniquely solved tasks that other modalities
+fail). GPT dominates code generation, Gemini adds meaningful diversity,
+and Gemini/GPT image reasoning behave differently enough to be
+complementary; Opus remains unusually strong for end-to-end text
+reasoning and is the sole solver for several text-only successes. Over
+the 167 public-evaluation test instances, the final system solves
+128/167 = 76.65\% at the instance level (pass@2), while the candidate
+pool contains at least one correct output for 144/167 = 86.23\%
+(candidate-oracle accuracy). The remaining 39 instances decompose into
+21 generation failures where no candidate in the pool is correct (with
+full 29-candidate coverage), 1 early-stopping failure, and 17 selection
+failures where at least one correct candidate exists but is not chosen
+by the judge. Generation failures tend to involve long chains of
+dependent reasoning steps, while selection failures cluster around tasks
+where the test case introduces a mechanic not fully disambiguated by
+training examples. One additional instance (\texttt{21897d95:2}) is
+solved by judge synthesis despite \textbf{zero} candidates matching
+ground truth; this occurs via judge synthesis rather than candidate
+selection.
 
 \begin{figure}
 \centering
 \includegraphics{figures/methodology_matrix.png}
 \caption{Methodology matrix over public evaluation instances. Green =
-candidate matches ground truth; red = candidate does not match; white =
-candidate not produced (early stopping). Rows are test instances;
-columns are candidate generators grouped by modality family.}
+correct candidate; red = incorrect candidate; white = candidate not
+produced due to early stopping.}
 \end{figure}
 
 \hypertarget{modality-complementarity-public-eval}{%
@@ -785,23 +787,28 @@ correct but the judge recombined partial insights (correct room parsing
 from some candidates, correct arrow semantics from others) into a novel
 correct output.
 
+Although the measured count is only one instance, this case is
+qualitatively different from the +7 minority recoveries above. Holistic
+selection succeeds by identifying a rare correct candidate that already
+exists in the pool; synthesis succeeds when \textbf{no correct candidate
+exists at all}, but complementary partial truths are distributed across
+multiple failed candidates. In that sense, \texttt{21897d95:2} should be
+read as a proof-of-possibility for \textbf{compositional repair}: the
+architecture can sometimes do more than rank hypotheses and can instead
+construct a correct answer by recombining partial insights.
+
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
 \hypertarget{ablation-studies}{%
 \section{Ablation Studies}\label{ablation-studies}}
 
-A rigorous component attribution would require multiple full-pipeline
-runs with individual components removed or substituted. Each such run
-costs approximately \$2,400 in API spend (Table 6), making extensive
-ablation prohibitively expensive. This paper therefore relies primarily
-on \textbf{post-hoc analysis of the single public evaluation run},
-extracting what can be measured from the existing candidate pool rather
-than running dedicated ablation experiments. This approach has clear
-limitations: it cannot capture interaction effects between components,
-and some comparisons (e.g., end-to-end modality removal) require fresh
-runs that have not been performed. Unless otherwise stated, ``solved''
-refers to pass@2 at the \textbf{test-instance} level on the public
-evaluation split (167 instances).
+Rigorous component attribution would require multiple full-pipeline
+reruns, each costing about \$2,400 in API spend (Table 6). This section
+therefore relies on \textbf{post-hoc analysis of the single public
+evaluation run}, which is informative but cannot capture all interaction
+effects. Unless otherwise stated, ``solved'' refers to pass@2 at the
+\textbf{test-instance} level on the 167-instance public evaluation
+split.
 
 \hypertarget{measured-ablations}{%
 \subsection{Measured Ablations}\label{measured-ablations}}
@@ -836,16 +843,12 @@ fixed) & +1 \\
 \end{tabular}
 \end{table}
 
-The +7 holistic selection uplift directly validates the anti-consistency
-design: all 7 gains are minority recoveries where the correct answer was
-not the most frequent candidate output, and the judge's ability to read
-and compare full reasoning traces -- rather than simply tallying outputs
--- was the deciding factor. Synthesis yielded +1 instance where no
-candidate was correct but the judge recombined partial insights from
-complementary failures into a novel correct output. While the measured
-synthesis uplift is small on this run, the mechanism has particular
-potential on harder tasks where no single candidate is fully correct but
-multiple candidates contain complementary partial insights.
+The +7 holistic-selection uplift consists entirely of minority
+recoveries where the correct answer was not the most frequent candidate
+output. Synthesis adds +1 more instance by recombining complementary
+partial insights when no candidate is fully correct. While the measured
+synthesis count is small in this run, the mechanism is most relevant on
+harder tasks where no single candidate fully solves the problem.
 
 \hypertarget{cost-attribution}{%
 \subsection{Cost Attribution}\label{cost-attribution}}
@@ -889,18 +892,58 @@ Code & 1016.56 & 6.09 & 48.9\% \\
 \end{table}
 
 Candidate generation dominates at 87\% of spend; code is the most
-expensive family (49\% of generation cost) due to iterative sandbox
-execution. Judging contributes +7 solved instances (holistic selection)
-and +1 (synthesis) at only 13\% of total cost, making it highly
-cost-effective.
+expensive family because of iterative sandbox execution. Judging
+contributes +7 solved instances from holistic selection and +1 from
+synthesis at only 13\% of total cost.
+
+\textbf{Table 8. Post-hoc marginal oracle coverage on the
+complete-coverage subset (n = 130).} This oracle-only analysis uses the
+130 instances where all 29 candidates were produced. It estimates
+lower-bound generation gains under a hypothetical staged family
+expansion; judges are not re-run on reduced pools.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\begin{tabular}{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Candidate budget
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Families included
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Oracle-solvable instances
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Marginal gain vs previous stage
+\end{minipage} \\
+\midrule\noalign{}
+
+\bottomrule\noalign{}
+
+8 candidates & Text only & 84 / 130 (64.6\%) & -- \\
+18 candidates & Text + Image & 101 / 130 (77.7\%) & +17 \\
+29 candidates & Text + Image + Code & 108 / 130 (83.1\%) & +7 \\
+\end{tabular}
+\end{table}
+
+The main takeaway is modest but useful: on the hard-instance subset,
+additional candidate families are \textbf{not equally valuable}, and
+staged expansion can recover meaningful oracle coverage beyond a cheap
+base. Because this is a post-hoc oracle analysis under one ordering, it
+should be read only as evidence for \textbf{modality-aware adaptive
+routing}. This complements the early-stopping result: 37/167 instances
+terminated after the initial 8-candidate probe, and 36 of those 37 were
+solved correctly.
 
 \hypertarget{unperformed-ablations}{%
 \subsection{Unperformed Ablations}\label{unperformed-ablations}}
 
 The following ablations would strengthen the paper's claims but have not
-been run due to cost constraints (\textasciitilde\$2,400 per full run).
-They are listed as transparency about what remains unknown and as a
-roadmap for future work:
+been run due to cost constraints (\textasciitilde\$2,400 per full run):
 
 \begin{itemize}
 \tightlist
@@ -910,9 +953,10 @@ roadmap for future work:
   pool, capturing interaction effects not visible in oracle-level
   analysis.
 \item
-  \textbf{Candidate budget scaling:} sweep the number of candidates per
-  modality to estimate marginal returns and identify diminishing-returns
-  regimes.
+  \textbf{Matched candidate budget scaling:} rerun the full pipeline at
+  multiple budget points and with multiple routing orders to estimate
+  marginal returns under controlled conditions. Table 8 provides only a
+  post-hoc oracle lower bound, not a full end-to-end scaling curve.
 \item
   \textbf{Trace content ablation:} compare judge accuracy with full
   reasoning traces vs output grids only, to quantify whether trace
@@ -925,51 +969,39 @@ roadmap for future work:
 \hypertarget{negative-results}{%
 \section{Negative Results}\label{negative-results}}
 
-This section documents approaches explored during development that were
-ultimately discarded, often because they reduced diversity, increased
-brittleness, or forced premature abstraction. Two findings stand out for
-their direct impact on the final system design.
+Several development ideas were discarded because they reduced diversity
+or increased brittleness. Two findings stand out for their direct impact
+on the final system design.
 
-\textbf{Prescriptive prompting degrades performance.} Perhaps the most
-counterintuitive finding is that extensive prompt engineering --
-prescribed reasoning templates, structured output requirements,
-chain-of-thought scaffolding, domain-specific heuristics -- consistently
-hurt performance on the hardest tasks. The mechanism appears to be a
-\textbf{compliance tax on reasoning}: when instructed \emph{how} to
-think, the model allocates a significant portion of its reasoning budget
-to following instructions rather than solving the problem. On easy tasks
-this overhead is harmless, but on hard tasks where creative leaps are
-required, the model dutifully follows the prescribed template and never
-explores the unstructured reasoning path that might have led to the
-correct solution. Prescriptive prompts also interact with diversity:
-when all N candidates follow the same reasoning template, they tend to
-converge on the same (possibly wrong) answer. A minimal prompt allows
-different candidates to approach the problem from genuinely different
-angles. The final system uses deliberately minimal prompts with no
-prescribed structure, tolerating noisy outputs with robust downstream
-parsing.
+\textbf{Prescriptive prompting degrades performance.} Reasoning
+templates, structured output requirements, chain-of-thought scaffolding,
+and domain-specific heuristics consistently hurt performance on the
+hardest tasks. The mechanism appears to be a \textbf{compliance tax on
+reasoning}: when told exactly \emph{how} to think, models spend more of
+their test-time compute budget following the template and less on
+exploring unconventional hypotheses. On easy tasks this overhead is
+often harmless, but on hard tasks it suppresses the creative leaps
+needed to escape the main wrong-answer cluster. Prescriptive prompts
+also interact badly with diversity: when all candidates follow the same
+template, they are more likely to converge on the same flawed
+interpretation. The final system therefore uses deliberately minimal
+prompts with tolerant downstream parsing.
 
 \textbf{Hint generation collapsed diversity.} A two-stage approach --
-generate a hint, then solve conditioned on the hint, structurally
-similar to Self-Refine (Madaan et al. 2023) and Reflexion (Shinn et al.
-2023) -- was tested and discarded. The hint stage consistently narrowed
-candidate diversity into a smaller hypothesis space, which is
-counterproductive when the correct solution may require an
-unconventional reasoning path. Similarly, structured decomposition
-(object identification followed by transformation identification
-followed by solving) suffered from brittle stage handoffs that regressed
-candidate outputs toward the mean rather than expanding the hypothesis
-space.
+generate a hint, then solve conditioned on that hint, structurally
+similar to Self-Refine {[}13{]} and Reflexion {[}14{]} -- was tested and
+discarded. The hint stage consistently narrowed candidate diversity into
+a smaller hypothesis space, which is counterproductive when the correct
+solution may require an unconventional reasoning path. Similarly, staged
+decomposition pipelines often suffered brittle handoffs, regressing
+candidate outputs toward the mean rather than broadening the search.
 
-Several other approaches were also discarded: Opus codegen and image
-reasoning contributed less uniquely than GPT/Gemini configurations and
-were dropped from the final mix; forcing strict output schemas (e.g.,
-JSON via API-level response format constraints) underperformed free-form
-output with robust parsing; and synthetic data augmentation for code
-candidates (color permutation, rotation, mirroring) added no meaningful
-signal because surface-level augmentations do not test new structural
-properties and geometric transforms can break task semantics for
-orientation-dependent tasks.
+Several other approaches were also discarded: strict output schemas,
+synthetic code-data augmentation, and weaker generator configurations
+that contributed little unique coverage. The synthetic augmentations
+were especially weak because surface-level transforms did not create new
+structural challenges, and geometric transforms could even break task
+semantics on orientation-dependent problems.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
@@ -977,67 +1009,69 @@ orientation-dependent tasks.
 \section{Discussion and Conclusion}\label{discussion-and-conclusion}}
 
 This paper demonstrates that strong ARC-AGI-2 performance can be
-achieved by treating \textbf{modalities as search operators} --
-generating candidates independently across heterogeneous reasoning
-channels (text, image, code) to maximize hypothesis diversity, then
-selecting using holistic judging over full traces. At the time of
-writing, this approach achieves the highest score on the ARC Prize
-Verified leaderboard (72.9\%), surpassing the best-performing standalone
-frontier models -- GPT-5.2 Pro (54.2\%) and Gemini 3 Pro (54.0\%) -- by
-+18.7 percentage points. This substantial margin suggests that
-orchestrating diverse reasoning modalities with principled selection is
-a more effective strategy for abstract reasoning than scaling any single
-model alone.
+achieved by treating \textbf{modalities as search operators} and
+selecting with holistic judging over full traces. At the time of
+writing, the approach achieves 72.9\% on the ARC Prize Verified
+leaderboard, exceeding the best standalone frontier models -- GPT-5.2
+Pro (54.2\%) and Gemini 3 Pro (54.0\%) -- by +18.7 points. Within
+ARC-AGI-2, this suggests that orchestrating diverse reasoning modalities
+is more effective than scaling any single model alone.
 
 The system's core contributions are architectural rather than
 model-specific. First, multi-modal candidate generation exploits the
-observation that text, image, and code representations activate
-different reasoning pathways -- each modality exclusively solves tasks
-inaccessible to the others (Table 3). Second, holistic judging over full
-reasoning traces recovers minority-correct solutions that majority
-voting discards, yielding +7 instances of uplift. Third, judge synthesis
-enables the construction of novel correct outputs from complementary
-partial insights when no single candidate is fully correct. These
+fact that text, image, and code representations activate different
+reasoning pathways, and each modality family contributes unique solves
+(Table 3). Second, holistic judging over full reasoning traces recovers
+minority-correct solutions that majority voting discards, yielding +7
+instances of uplift. Third, judge synthesis can produce a novel correct
+output from complementary partial insights when no candidate is fully
+correct. Although synthesis appears only once in this run, that case is
+qualitatively important: it shows the architecture can sometimes
+\textbf{recombine partial evidence into a new correct solution}. These
 mechanisms are complementary: diverse generation expands the hypothesis
-space, while context-preserving selection navigates it.
+space, while context-preserving selection navigates it and, in rare
+cases, repairs it compositionally.
+
+Any claim of broader generality should be stated cautiously. The current
+evidence comes only from ARC-AGI-2, so cross-benchmark transfer is
+unproven. The most plausibly portable components are the high-level
+ideas: diverse hypothesis generation across representations, joint
+comparison of full candidate traces, and selective synthesis when
+partial truths are distributed across candidates. ARC-specific elements
+such as the grid encodings, the image-rendering setup, the 29-candidate
+budget, and the pass@2 aggregation rule should be viewed as task-tuned
+choices rather than universal prescriptions.
 
 \hypertarget{limitations}{%
 \subsection{Limitations}\label{limitations}}
 
 \textbf{Cost and practical scalability.} The system spends
-\$19.69--\$38.99 per task -- orders of magnitude more expensive than a
-single model call. ARC Prize explicitly treats efficiency as a
-first-class metric (Chollet et al. 2024), and the current system is far
-from efficient. The brute-force strategy of generating 29 candidates
-across three models and three modalities, then running three separate
-judge passes, is effective but wasteful; a production system would need
-adaptive routing that allocates expensive modalities only when
-uncertainty is high, but no such mechanism has been developed here.
+\$19.69--\$38.99 per task -- far more than a single model call. ARC
+Prize explicitly treats efficiency as a first-class metric, and the
+current 29-candidate, three-judge pipeline is effective but wasteful; a
+practical system would need adaptive routing that allocates expensive
+modalities only when uncertainty is high.
 
 \textbf{Single-run results.} The headline numbers (76.11\% public,
-72.9\% semi-private) each come from a single evaluation run. LLM outputs
-are stochastic, and the system's reliance on sampling diversity means
-that results will vary across runs; no confidence intervals are reported
-because repeated full-pipeline runs were not performed (each costing
-\textasciitilde\$2,400).
+72.9\% semi-private) each come from a single evaluation run. Because
+outputs are stochastic, results will vary across runs; no confidence
+intervals are reported because repeated full-pipeline runs were not
+performed.
 
 \textbf{No learning across tasks.} The system treats each task
-independently --- no information is carried from one task to the next,
-unlike a human solver who would build intuitions across tasks.
+independently; no information is carried from one task to the next.
 
-\textbf{Narrow evaluation domain.} The system has been evaluated
-exclusively on ARC-AGI-2; whether the architectural pattern ---
-modality-driven search with holistic judging --- generalizes to other
-abstract reasoning benchmarks or broader AI tasks is unknown.
+\textbf{Narrow evaluation domain.} The system has been evaluated only on
+ARC-AGI-2. Whether the architectural pattern generalizes to other
+benchmarks or broader AI tasks is unknown.
 
-\textbf{Reproducibility fragility.} The system depends on specific
-proprietary model snapshots (GPT-5.2, Gemini 3 Preview, Opus 4.5) and
+\textbf{Reproducibility fragility.} The system depends on proprietary
+model snapshots (GPT-5.2, Gemini 3 Preview, Opus 4.5) and
 vendor-specific reasoning settings that may change or become unavailable
-over time. Results may not be exactly reproducible even with identical
-prompts and parameters if the underlying model versions
-drift.\footnote{Source code: https://github.com/beetree/ARC-AGI.
-  Complete raw data for the public evaluation run (prompts, responses,
-  reasoning traces, judge transcripts; over 7 million lines):
+over time. Source code and complete public-run artifacts are released,
+but results may not be exactly reproducible if the underlying model
+versions drift.\footnote{Source code:
+  https://github.com/beetree/ARC-AGI. Public-evaluation run data:
   https://www.kaggle.com/code/johanland/johan-land-solver-v7-public/comments?scriptVersionId=290052212.}
 
 \hypertarget{future-directions}{%
@@ -1045,114 +1079,119 @@ drift.\footnote{Source code: https://github.com/beetree/ARC-AGI.
 
 Two directions appear most promising. \textbf{Adaptive routing} would
 allocate expensive modalities only when early-stage candidates show low
-agreement, reducing cost without sacrificing accuracy on hard tasks; the
-early-stopping heuristic already demonstrates the principle (97.3\%
-accuracy on easy tasks at reduced cost), but a more principled
-uncertainty-driven routing mechanism could extend this to the full
-difficulty spectrum. \textbf{Synthesis gating} would trigger judge
-synthesis only when candidate agreement is low or when multiple
-candidates contain complementary partial solutions, potentially
-amplifying the +1 instance uplift observed in this work on harder tasks
-where the recombination mechanism has the most potential.
+agreement, reducing cost without sacrificing accuracy on hard tasks. The
+current early-stopping heuristic already works well on easy tasks, and
+the post-hoc analysis in Section V suggests that later candidate
+families should be added in stages rather than treated as equally
+valuable. \textbf{Synthesis gating} would trigger judge synthesis only
+when candidate agreement is low or when multiple candidates contain
+complementary partial solutions, potentially amplifying the +1 instance
+uplift observed here.
 
-\hypertarget{acknowledgments}{%
-\subsection{Acknowledgments}\label{acknowledgments}}
+\section*{Acknowledgment}
 
 Thank you to the ARC-AGI Discord community for valuable discussion and
 shared insights throughout the development of this work, and to Greg
 Kamradt at ARC Prize for conducting the official semi-private
 evaluation.
 
-\hypertarget{refs}{}
-\begin{CSLReferences}{1}{0}
-\leavevmode\vadjust pre{\hypertarget{ref-akyurek2024surprising}{}}%
-Akyürek, Ekin, Mehul Damani, Adam Zweiger, Linlu Qiu, Han Guo, Jyothish
-Pari, Yoon Kim, and Jacob Andreas. 2025. {``The Surprising Effectiveness
-of Test-Time Training for Few-Shot Learning.''} In \emph{Proceedings of
-the 42nd International Conference on Machine Learning}, 267:942--63.
-PMLR.
-
-\leavevmode\vadjust pre{\hypertarget{ref-chollet2019measure}{}}%
-Chollet, François. 2019. {``On the Measure of Intelligence.''}
-\emph{arXiv Preprint arXiv:1911.01547}.
-
+\section*{References}
+\begin{CSLReferences}{0}{0}
 \leavevmode\vadjust pre{\hypertarget{ref-arcprize2024report}{}}%
-Chollet, François, Mike Knoop, Gregory Kamradt, and Bryan Landers. 2024.
-{``{ARC Prize 2024}: Technical Report.''} \emph{arXiv Preprint
-arXiv:2412.04604}.
-
-\leavevmode\vadjust pre{\hypertarget{ref-ferre2021arc}{}}%
-Ferré, Sébastien. 2021. {``First Steps of an Approach to the {ARC}
-Challenge Based on Descriptive Grid Models and the Minimum Description
-Length Principle.''} \emph{arXiv Preprint arXiv:2112.00848}.
-
-\leavevmode\vadjust pre{\hypertarget{ref-gao2023pal}{}}%
-Gao, Luyu, Aman Madaan, Shuyan Zhou, Uri Alon, Pengfei Liu, Yiming Yang,
-Jamie Callan, and Graham Neubig. 2023. {``{PAL}: Program-Aided Language
-Models.''} \emph{International Conference on Machine Learning}.
+\CSLLeftMargin{{[}1{]} }%
+\CSLRightInline{F. Chollet, M. Knoop, G. Kamradt, and B. Landers,
+{``{ARC Prize 2024}: Technical report,''} \emph{arXiv preprint
+arXiv:2412.04604}, 2024.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-land2026modality}{}}%
-Land, Johan. 2026. {``Modality-Driven Search with Holistic Trace Judging
-for {ARC-AGI-2}.''} \emph{arXiv Preprint}.
+\CSLLeftMargin{{[}2{]} }%
+\CSLRightInline{J. Land, {``Modality-driven search with holistic trace
+judging for {ARC-AGI-2},''} \emph{arXiv preprint}, 2026.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-chollet2019measure}{}}%
+\CSLLeftMargin{{[}3{]} }%
+\CSLRightInline{F. Chollet, {``On the measure of intelligence,''}
+\emph{arXiv preprint arXiv:1911.01547}, 2019.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-ferre2021arc}{}}%
+\CSLLeftMargin{{[}4{]} }%
+\CSLRightInline{S. Ferré, {``First steps of an approach to the {ARC}
+challenge based on descriptive grid models and the minimum description
+length principle,''} \emph{arXiv preprint arXiv:2112.00848}, 2021.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-li2024induction}{}}%
-Li, Wen-Ding, Keya Hu, Carter Larsen, Yuqing Wu, Simon Alford, Caleb
-Woo, Spencer M. Dunn, et al. 2025. {``Combining Induction and
-Transduction for Abstract Reasoning.''} In \emph{International
-Conference on Learning Representations}.
+\CSLLeftMargin{{[}5{]} }%
+\CSLRightInline{W.-D. Li \emph{et al.}, {``Combining induction and
+transduction for abstract reasoning,''} in \emph{International
+conference on learning representations}, 2025.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-akyurek2024surprising}{}}%
+\CSLLeftMargin{{[}6{]} }%
+\CSLRightInline{E. Akyürek \emph{et al.}, {``The surprising
+effectiveness of test-time training for few-shot learning,''} in
+\emph{Proceedings of the 42nd international conference on machine
+learning}, in PMLR, vol. 267. 2025, pp. 942--963.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-bonnet2024latent}{}}%
-Macfarlane, Matthew V., and Clément Bonnet. 2025. {``Searching Latent
-Program Spaces.''} In \emph{Advances in Neural Information Processing
-Systems}. Vol. 38.
-
-\leavevmode\vadjust pre{\hypertarget{ref-madaan2023selfrefine}{}}%
-Madaan, Aman, Niket Tandon, Prakhar Gupta, Skyler Hallinan, Luyu Gao,
-Sarah Wiegreffe, Uri Alon, et al. 2023. {``Self-Refine: Iterative
-Refinement with Self-Feedback.''} \emph{Advances in Neural Information
-Processing Systems} 36.
-
-\leavevmode\vadjust pre{\hypertarget{ref-shinn2023reflexion}{}}%
-Shinn, Noah, Federico Cassano, Ashwin Gopinath, Karthik Narasimhan, and
-Shunyu Yao. 2023. {``Reflexion: Language Agents with Verbal
-Reinforcement Learning.''} \emph{Advances in Neural Information
-Processing Systems} 36.
-
-\leavevmode\vadjust pre{\hypertarget{ref-snell2024scaling}{}}%
-Snell, Charlie, Jaehoon Lee, Kelvin Xu, and Aviral Kumar. 2025.
-{``Scaling {LLM} Test-Time Compute Optimally Can Be More Effective Than
-Scaling Model Parameters.''} In \emph{International Conference on
-Learning Representations}.
-
-\leavevmode\vadjust pre{\hypertarget{ref-wang2022selfconsistency}{}}%
-Wang, Xuezhi, Jason Wei, Dale Schuurmans, Quoc Le, Ed Chi, Sharan
-Narang, Aakanksha Chowdhery, and Denny Zhou. 2023. {``Self-Consistency
-Improves Chain of Thought Reasoning in Language Models.''} In
-\emph{International Conference on Learning Representations}.
+\CSLLeftMargin{{[}7{]} }%
+\CSLRightInline{M. V. Macfarlane and C. Bonnet, {``Searching latent
+program spaces,''} in \emph{Advances in neural information processing
+systems}, 2025.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-wei2022chain}{}}%
-Wei, Jason, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Brian Ichter,
-Fei Xia, Ed Chi, Quoc Le, and Denny Zhou. 2022. {``Chain-of-Thought
-Prompting Elicits Reasoning in Large Language Models.''} \emph{Advances
-in Neural Information Processing Systems} 35.
+\CSLLeftMargin{{[}8{]} }%
+\CSLRightInline{J. Wei \emph{et al.}, {``Chain-of-thought prompting
+elicits reasoning in large language models,''} \emph{Advances in Neural
+Information Processing Systems}, vol. 35, 2022.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-wang2022selfconsistency}{}}%
+\CSLLeftMargin{{[}9{]} }%
+\CSLRightInline{X. Wang \emph{et al.}, {``Self-consistency improves
+chain of thought reasoning in language models,''} in \emph{International
+conference on learning representations}, 2023.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-yao2023tree}{}}%
-Yao, Shunyu, Dian Yu, Jeffrey Zhao, Izhak Shafran, Thomas L. Griffiths,
-Yuan Cao, and Karthik Narasimhan. 2023. {``Tree of Thoughts: Deliberate
-Problem Solving with Large Language Models.''} In \emph{Advances in
-Neural Information Processing Systems}. Vol. 36.
+\CSLLeftMargin{{[}10{]} }%
+\CSLRightInline{S. Yao \emph{et al.}, {``Tree of thoughts: Deliberate
+problem solving with large language models,''} in \emph{Advances in
+neural information processing systems}, 2023.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-yao2022react}{}}%
-Yao, Shunyu, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik
-Narasimhan, and Yuan Cao. 2023. {``{ReAct}: Synergizing Reasoning and
-Acting in Language Models.''} \emph{International Conference on Learning
-Representations}.
+\CSLLeftMargin{{[}11{]} }%
+\CSLRightInline{S. Yao \emph{et al.}, {``{ReAct}: Synergizing reasoning
+and acting in language models,''} \emph{International Conference on
+Learning Representations}, 2023.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-gao2023pal}{}}%
+\CSLLeftMargin{{[}12{]} }%
+\CSLRightInline{L. Gao \emph{et al.}, {``{PAL}: Program-aided language
+models,''} \emph{International Conference on Machine Learning}, 2023.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-madaan2023selfrefine}{}}%
+\CSLLeftMargin{{[}13{]} }%
+\CSLRightInline{A. Madaan \emph{et al.}, {``Self-refine: Iterative
+refinement with self-feedback,''} \emph{Advances in Neural Information
+Processing Systems}, vol. 36, 2023.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-shinn2023reflexion}{}}%
+\CSLLeftMargin{{[}14{]} }%
+\CSLRightInline{N. Shinn, F. Cassano, A. Gopinath, K. Narasimhan, and S.
+Yao, {``Reflexion: Language agents with verbal reinforcement
+learning,''} \emph{Advances in Neural Information Processing Systems},
+vol. 36, 2023.}
+
+\leavevmode\vadjust pre{\hypertarget{ref-snell2024scaling}{}}%
+\CSLLeftMargin{{[}15{]} }%
+\CSLRightInline{C. Snell, J. Lee, K. Xu, and A. Kumar, {``Scaling {LLM}
+test-time compute optimally can be more effective than scaling model
+parameters,''} in \emph{International conference on learning
+representations}, 2025.}
 
 \leavevmode\vadjust pre{\hypertarget{ref-zheng2023judging}{}}%
-Zheng, Lianmin, Wei-Lin Chiang, Ying Sheng, Siyuan Zhuang, Zhanghao Wu,
-Yonghao Zhuang, Zi Lin, et al. 2023. {``Judging {LLM}-as-a-Judge with
-{MT-Bench} and {Chatbot Arena}.''} \emph{Advances in Neural Information
-Processing Systems} 36.
+\CSLLeftMargin{{[}16{]} }%
+\CSLRightInline{L. Zheng \emph{et al.}, {``Judging {LLM}-as-a-judge with
+{MT-Bench} and {Chatbot Arena},''} \emph{Advances in Neural Information
+Processing Systems}, vol. 36, 2023.}
 
 \end{CSLReferences}
 

@@ -4,12 +4,12 @@ A central challenge in applying LLMs to abstract reasoning is not just producing
 
 ARC-AGI-2 was designed to be *easy for humans and hard for AI*, and—critically—to measure both **capability** and **efficiency** (cost). Progress on ARC-style benchmarks has also been rapid rather than stagnant: ARC Prize reports significant year-over-year improvements driven by frontier "reasoning systems" and application-layer refinement harnesses [@arcprize2024report].
 
-This paper describes an approach that treats **modalities as search operators** and uses **judging as the final selection mechanism**: generate diverse candidate solutions across independent reasoning channels, then select among them using context-preserving holistic judging.^[This work has not been peer-reviewed and is intended as a technical preprint.]
+This paper describes an ARC-AGI-2 solver that treats **modalities as search operators** and uses **judging as the final selection mechanism**: generate diverse candidate solutions across independent reasoning channels, then select among them using context-preserving holistic judging.^[This work has not been peer-reviewed and is intended as a technical preprint.]
 
 ### Contributions
 
-- **A modality-driven search solver** that generates candidates independently across text, image, and code reasoning channels to produce diverse candidate solutions.
-- **A context-preserving holistic judge** that reads all candidate traces jointly to select the best outputs. Unlike standard self-consistency (majority vote) or per-candidate scoring, this judge identifies correct *minority* hypotheses by comparing full reasoning traces in a single context window — yielding +7 solved instances over majority vote at only 13% of total system cost (Section 7).
+- **A modality-driven search solver for ARC-AGI-2** that generates candidates independently across text, image, and code reasoning channels to produce diverse candidate solutions.
+- **A context-preserving holistic judge in this setting** that reads all candidate traces jointly to select the best outputs. Unlike standard self-consistency (majority vote) or per-candidate scoring, this judge identifies correct *minority* hypotheses by comparing full reasoning traces in a single context window — yielding +7 solved instances over majority vote at only 13% of total system cost (Section 7).
 - **Verified ARC-AGI-2 semi-private performance:** 72.9% at $38.99/task on the ARC Prize Verified leaderboard dataset^[https://arcprize.org/leaderboard] — the highest score on the leaderboard at the time of writing, exceeding the best standalone frontier models (GPT-5.2 Pro at 54.2%, Gemini 3 Pro at 54.0%) by +18.7 percentage points.
 - **Public eval performance:** 76.11% at $19.69/task (self-measured).
 - **AI-assisted development:** the solver was developed with AI assistance for both implementation and architectural design (Section 3.3).
@@ -748,6 +748,20 @@ Table 6 reports the cost breakdown for the public evaluation run, averaged per t
 
 Candidate generation dominates overall cost at 87% of spend, with judging accounting for only 13%. Within generation, code candidates are the most expensive family (49% of generation cost), driven primarily by tool-integrated code generation with iterative sandbox execution. Given that judging contributes +7 solved instances (holistic selection) and +1 (synthesis) at only 13% of total cost, the judging phase is highly cost-effective relative to its accuracy contribution.
 
+#### Post-hoc marginal returns under staged family expansion
+
+Using the 130-instance **complete-coverage subset** (where all 29 candidates were generated), the existing run data also support a narrower post-hoc analysis of marginal oracle coverage under a hypothetical staged family expansion. This is an oracle-only analysis: judges are **not** re-run on reduced pools, so the numbers should be interpreted as lower bounds on the value of adding later candidate families.
+
+**Table 8. Post-hoc marginal oracle coverage under staged family expansion on the complete-coverage subset (n = 130).**
+
+| Candidate budget | Families included | Oracle-solvable instances | Marginal gain vs previous stage |
+| --- | --- | --- | --- |
+| 8 candidates | Text only | 84 / 130 (64.6%) | -- |
+| 18 candidates | Text + Image | 101 / 130 (77.7%) | +17 |
+| 29 candidates | Text + Image + Code | 108 / 130 (83.1%) | +7 |
+
+The main takeaway is modest but useful: additional candidate families are **not equally valuable**, and staged expansion can recover meaningful oracle coverage beyond a cheap base. Because this is a post-hoc oracle analysis under one ordering, it should be read only as evidence for **modality-aware adaptive routing**, not as a definitive ranking of family quality.
+
 ### Modality ablations (oracle-level only)
 
 Section 6.6 reports modality-level uniqueness on the **complete-coverage subset** (n = 130), where all modalities are executed. In this subset, the following **exclusive** oracle solvability counts are observed (Table 4): Text only = 2, Image only = 6, Code only = 7. These exclusive counts imply that removing any single modality would reduce candidate-oracle coverage by at least a few percent even before accounting for downstream judge interactions and selection effects.
@@ -764,7 +778,7 @@ The following ablations would strengthen the paper's claims but have not been ru
 
 - **End-to-end modality removal:** run the full pipeline with one modality family (text, image, or code) removed and re-run judging on the reduced candidate pool. The oracle-level exclusive counts in Section 7.2 provide a lower bound, but the actual end-to-end impact — including judge interaction effects — is unknown. This requires at minimum three full runs (~$7,200 total).
 - **Independent candidates vs sequential refinement:** hold compute fixed and compare N independent candidates (the current approach) against N sequential refinement steps (iterative prompt chaining or staged decomposition). Section 8 documents qualitative evidence that sequential approaches reduced diversity, but a controlled comparison with matched compute budgets has not been performed.
-- **Candidate budget scaling:** sweep the number of candidates per modality/model to estimate marginal returns per additional candidate and identify diminishing-returns regimes. The current system uses 29 candidates, but it is unknown whether 15 or 50 would yield meaningfully different accuracy at proportionally different cost.
+- **Matched candidate budget scaling:** rerun the full pipeline at multiple budget points and with multiple routing orders to estimate marginal returns under controlled conditions. Table 8 provides only a post-hoc oracle lower bound, not a full end-to-end scaling curve.
 - **Per-model contribution:** isolate the contribution of each foundation model (GPT-5.2, Gemini 3, Opus 4.5) by running the pipeline with one model removed entirely. Opus 4.5 contributes only 1 candidate; whether its inclusion is cost-justified relative to adding another GPT-5.2 or Gemini candidate is unknown.
 - **Temperature and sampling parameters:** the current system uses default or near-default sampling settings for each model. Sweeping temperature, top-p, and other sampling parameters within each modality could reveal whether diversity is better increased through sampling variation or through modality variation.
 - **Representation formats:** CSV vs alternative encodings (e.g., JSON-like arrays, Python list syntax, and object-abstraction encodings), evaluated under the same candidate/judge budgets. The benchmarking reported in Section 4 was performed during development with different model versions; a controlled evaluation on the final system would be more rigorous.
@@ -862,7 +876,11 @@ This paper demonstrates that strong ARC-AGI-2 performance can be achieved by tre
 - generate candidates independently across heterogeneous reasoning channels (text, image, code) to maximize hypothesis diversity,
 - then select using holistic judging over full traces.
 
-At the time of writing, this approach achieves the highest score on the ARC Prize Verified leaderboard (72.9%), surpassing the best-performing standalone frontier models — GPT-5.2 Pro (54.2%) and Gemini 3 Pro (54.0%) — by +18.7 percentage points. This substantial margin suggests that orchestrating diverse reasoning modalities with principled selection is a more effective strategy for abstract reasoning than scaling any single model alone.
+At the time of writing, this approach achieves the highest score on the ARC Prize Verified leaderboard (72.9%), surpassing the best-performing standalone frontier models — GPT-5.2 Pro (54.2%) and Gemini 3 Pro (54.0%) — by +18.7 percentage points. Within ARC-AGI-2, this substantial margin suggests that orchestrating diverse reasoning modalities with principled selection is more effective than scaling any single model alone.
+
+The core contributions are architectural rather than model-specific. First, multi-modal candidate generation exploits the fact that text, image, and code representations activate different reasoning pathways, and each modality family contributes unique solves. Second, holistic judging over full traces recovers minority-correct solutions that majority voting discards, yielding +7 solved instances. Third, judge synthesis can produce a novel correct output from complementary partial insights when no candidate is fully correct. Although synthesis yields only +1 solved instance in this run, that case is qualitatively important: none of the 29 candidates was correct, yet the judge still produced the correct answer by recombining partial truths from multiple failures. This is evidence of compositional repair, not just better ranking.
+
+Any claim of broader generality should be stated cautiously. The current evidence comes only from ARC-AGI-2, so cross-benchmark transfer is unproven. The components that appear most plausibly portable are the high-level architectural ideas: generating diverse hypotheses across multiple representations, comparing full candidate traces jointly rather than relying only on majority agreement, and selectively attempting synthesis when partial truths are distributed across candidates. By contrast, ARC-specific elements such as the modality mix, the grid encodings and image renderings, the 29-candidate budget, and the pass@2 aggregation setup should be viewed as task-tuned instantiations rather than universal prescriptions.
 
 ### Limitations
 
@@ -878,18 +896,18 @@ This work has several important limitations that should be weighed when interpre
 
 **No learning across tasks.** The system treats each task independently — no information is carried from one task to the next. A human solver would build intuitions across tasks (e.g., "tasks in this benchmark often involve symmetry" or "I've seen this color-mapping pattern before"), but the current system starts from scratch every time. This is both a limitation and a design choice: task independence simplifies the pipeline and avoids overfitting to task ordering, but it means the system cannot amortize its reasoning cost across related tasks.
 
-**Narrow evaluation domain.** The results are demonstrated on a single benchmark (ARC-AGI-2). While the architectural pattern — diverse generation plus holistic judging — is domain-general in principle, this paper provides no evidence that the approach transfers to other domains. The specific design choices (modality mix, candidate count, judge prompt structure) were tuned for ARC and may not generalize without adaptation.
+**Narrow evaluation domain.** The results are demonstrated only on ARC-AGI-2. The current evidence supports the architecture in this domain, but does not establish that it transfers to other tasks without adaptation.
 
 ### Future work
 
-- Adaptive routing: allocate expensive modalities only when uncertainty is high.
+- Adaptive routing: allocate expensive modalities only when uncertainty is high. The post-hoc staged family analysis in Section 7 suggests that later candidate families should be added in stages rather than treated as equally valuable.
 - Judge compression without premature abstraction: find ways to reduce context size while retaining the benefits of joint context.
 - Further ablations: Section 7 lists a detailed set of unperformed ablations — including judge ensemble sizing, trace content contribution, per-model attribution, and early-stopping threshold tuning — that would strengthen component attribution claims.
 - Synthesis gating and amplification: the current judge always has the option to synthesize a novel output. A gating mechanism that decides *when* synthesis is likely to help — e.g., only when candidate agreement is low or when no candidate passes a confidence threshold — could improve targeting. Conversely, when synthesis is identified as having high potential (e.g., multiple candidates contain complementary partial solutions), the system could invoke additional synthesis attempts with varied prompting to increase the probability of a correct recombination. The current single-pass synthesis yielded +1 instance (Section 7); a more aggressive, targeted synthesis strategy could yield further uplift on the hardest tasks where no single candidate is fully correct.
 - Image representation tuning: the finding that intentionally imprecise grid renderings outperform pixel-perfect ones (Section 4) is suggestive but not well understood. Systematic study of rendering parameters — resolution, distortion level, color palette, annotation style — and their interaction with different vision-language models could yield further gains and clarify when and why visual prompting helps.
 - Broader modality coverage: additional frontier providers and open-source models, plus parameter sweeps (temperature, etc.).
 - Formal diversity quantification: the current paper measures modality complementarity via oracle overlap counts (Tables 3--4), but a richer diversity measure — e.g., pairwise output disagreement rates, embedding-space distances between reasoning traces, or information-theoretic metrics over the candidate distribution — would enable principled decisions about which generators to add, remove, or scale. A task-archetype taxonomy (classifying ARC tasks by the type of reasoning they require) could further clarify which modalities are most valuable for which problem classes.
-- Domain transfer: the "diverse generation + holistic judging" pattern is not specific to ARC. Any domain where models produce confident but divergent answers — mathematical proof search, legal analysis, medical diagnosis — could benefit from context-preserving adjudication over multiple independent reasoning traces. Validating this on non-ARC benchmarks is a natural next step.
+- Domain transfer: the "diverse generation + holistic judging" pattern may extend beyond ARC, but this paper does not establish that. Domains where models produce confident but divergent answers — mathematical proof search, legal analysis, medical diagnosis — are natural testbeds for validating which parts of the architecture truly transfer.
 
 ### A note on AI-assisted development
 

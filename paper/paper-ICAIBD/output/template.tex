@@ -1,8 +1,22 @@
 \documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
 \usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{float}
+\usepackage{fvextra}
+\usepackage{framed}
+\usepackage{hyperref}
+\usepackage{calc}
+\setkeys{Gin}{width=\linewidth,height=0.9\textheight,keepaspectratio}
 
 % Pandoc may emit some Unicode punctuation/symbols directly. Map common ones for pdflatex.
 \DeclareUnicodeCharacter{00B0}{\textdegree}
@@ -10,6 +24,7 @@
 \DeclareUnicodeCharacter{00D7}{\ensuremath{\times}}
 \DeclareUnicodeCharacter{0394}{\ensuremath{\Delta}}
 \DeclareUnicodeCharacter{2013}{--}
+\DeclareUnicodeCharacter{2014}{---}
 \DeclareUnicodeCharacter{2019}{'}
 \DeclareUnicodeCharacter{201C}{``}
 \DeclareUnicodeCharacter{201D}{''}
@@ -17,26 +32,11 @@
 \DeclareUnicodeCharacter{21D2}{\ensuremath{\Rightarrow}}
 \DeclareUnicodeCharacter{2248}{\ensuremath{\approx}}
 
-\usepackage{amsmath,amssymb}
-\usepackage{graphicx}
-\setkeys{Gin}{width=\linewidth,height=0.9\textheight,keepaspectratio}
-\usepackage{booktabs}
-\usepackage{longtable}
-% Pandoc emits longtable which is incompatible with two-column mode.
-% Add a post-processing step in build_paper.py to replace longtable with tabular.
-\usepackage{array}
-\usepackage{float}
-\usepackage{caption}
-\usepackage{xcolor}
-\usepackage{hyperref}
-\usepackage{calc}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
-\hypersetup{
-  colorlinks=true,
-  linkcolor=black,
-  citecolor=black,
-  urlcolor=blue
-}
+\hypersetup{hidelinks}
+\definecolor{shadecolor}{gray}{0.95}
 
 % Pandoc emits \tightlist for compact lists in some outputs.
 \providecommand{\tightlist}{%
@@ -66,6 +66,15 @@ $if(highlighting-macros)$
 $highlighting-macros$
 $endif$
 
+\RecustomVerbatimEnvironment{Highlighting}{Verbatim}{
+  commandchars=\\\{\},
+  breaklines,
+  breakanywhere=true,
+  breaksymbolleft={},
+  fontsize=\footnotesize
+}
+\renewenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+
 $for(header-includes)$
 $header-includes$
 $endfor$
@@ -88,6 +97,12 @@ $if(abstract)$
 \begin{abstract}
 $abstract$
 \end{abstract}
+$endif$
+
+$if(keywords)$
+\begin{IEEEkeywords}
+$for(keywords)$$keywords$$sep$, $endfor$
+\end{IEEEkeywords}
 $endif$
 
 $body$

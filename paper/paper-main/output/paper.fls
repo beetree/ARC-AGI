@@ -1,4 +1,4 @@
-PWD /home/johan/ARC-AGI/paper/output
+PWD /home/johan/ARC-AGI/paper/paper-main/output
 INPUT /etc/texmf/web2c/texmf.cnf
 INPUT /usr/share/texmf/web2c/texmf.cnf
 INPUT /usr/share/texlive/texmf-dist/web2c/texmf.cnf
@@ -63,6 +63,24 @@ INPUT /usr/share/texlive/texmf-dist/tex/latex/tools/array.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/tools/array.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/float/float.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/float/float.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/fvextra/fvextra.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/fvextra/fvextra.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/fancyvrb/fancyvrb.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/fancyvrb/fancyvrb.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/upquote/upquote.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/upquote/upquote.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/lineno/lineno.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/lineno/lineno.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/kvoptions/kvoptions.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/kvoptions/kvoptions.sty
+INPUT /usr/share/texlive/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
+INPUT /usr/share/texlive/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/framed/framed.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/framed/framed.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/caption/caption.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/caption/caption.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/caption/caption3.sty
@@ -79,14 +97,10 @@ INPUT /usr/share/texlive/texmf-dist/tex/latex/graphics/mathcolor.ltx
 INPUT /usr/share/texlive/texmf-dist/tex/latex/graphics/mathcolor.ltx
 INPUT /usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref.sty
-INPUT /usr/share/texlive/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty
-INPUT /usr/share/texlive/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty
 INPUT /usr/share/texlive/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
 INPUT /usr/share/texlive/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
 INPUT /usr/share/texlive/texmf-dist/tex/generic/pdfescape/pdfescape.sty
 INPUT /usr/share/texlive/texmf-dist/tex/generic/pdfescape/pdfescape.sty
-INPUT /usr/share/texlive/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
-INPUT /usr/share/texlive/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
 INPUT /usr/share/texlive/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
 INPUT /usr/share/texlive/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
 INPUT /usr/share/texlive/texmf-dist/tex/generic/infwarerr/infwarerr.sty
@@ -101,10 +115,6 @@ INPUT /usr/share/texlive/texmf-dist/tex/latex/refcount/refcount.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/refcount/refcount.sty
 INPUT /usr/share/texlive/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
 INPUT /usr/share/texlive/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
-INPUT /usr/share/texlive/texmf-dist/tex/latex/kvoptions/kvoptions.sty
-INPUT /usr/share/texlive/texmf-dist/tex/latex/kvoptions/kvoptions.sty
-INPUT /usr/share/texlive/texmf-dist/tex/latex/etoolbox/etoolbox.sty
-INPUT /usr/share/texlive/texmf-dist/tex/latex/etoolbox/etoolbox.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/hyperref/pd1enc.def
 INPUT /usr/share/texlive/texmf-dist/tex/latex/hyperref/pd1enc.def
 INPUT /usr/share/texlive/texmf-dist/tex/latex/hyperref/pd1enc.def
@@ -135,8 +145,6 @@ INPUT /usr/share/texlive/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/tools/calc.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/tools/calc.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/graphics/color.sty
-INPUT /usr/share/texlive/texmf-dist/tex/latex/fancyvrb/fancyvrb.sty
-INPUT /usr/share/texlive/texmf-dist/tex/latex/fancyvrb/fancyvrb.sty
 INPUT /usr/share/texmf/tex/latex/lm/t1lmr.fd
 INPUT /usr/share/texmf/tex/latex/lm/t1lmr.fd
 INPUT /usr/share/texmf/tex/latex/lm/t1lmr.fd
@@ -246,6 +254,7 @@ INPUT ./figures/pipeline.png
 INPUT ./figures/pipeline.png
 INPUT ./figures/pipeline.png
 INPUT ./figures/pipeline.png
+INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmtt9.tfm
 INPUT ./figures/d35bdbdc_1_step_5_common.png
 INPUT ./figures/d35bdbdc_1_step_5_common.png
 INPUT ./figures/d35bdbdc_1_step_5_common.png
@@ -254,7 +263,7 @@ INPUT ./figures/d35bdbdc_1_step_5_common.png
 INPUT /usr/share/texmf/tex/latex/lm/ts1lmtt.fd
 INPUT /usr/share/texmf/tex/latex/lm/ts1lmtt.fd
 INPUT /usr/share/texmf/tex/latex/lm/ts1lmtt.fd
-INPUT /usr/share/texmf/fonts/tfm/public/lm/ts1-lmtt10.tfm
+INPUT /usr/share/texmf/fonts/tfm/public/lm/ts1-lmtt9.tfm
 INPUT /usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc
 INPUT ./figures/methodology_matrix.png
 INPUT ./figures/methodology_matrix.png
@@ -278,3 +287,4 @@ INPUT /usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb
 INPUT /usr/share/texmf/fonts/type1/public/lm/lmtk10.pfb
 INPUT /usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb
 INPUT /usr/share/texmf/fonts/type1/public/lm/lmtt12.pfb
+INPUT /usr/share/texmf/fonts/type1/public/lm/lmtt9.pfb

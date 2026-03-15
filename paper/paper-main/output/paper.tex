@@ -28,6 +28,8 @@
 \usepackage{longtable}
 \usepackage{array}
 \usepackage{float}
+\usepackage{fvextra}
+\usepackage{framed}
 \usepackage{caption}
 \usepackage{xcolor}
 \usepackage{hyperref}
@@ -39,6 +41,7 @@
   citecolor=blue,
   urlcolor=blue
 }
+\definecolor{shadecolor}{gray}{0.95}
 
 % Pandoc emits \tightlist for compact lists in some outputs.
 \providecommand{\tightlist}{%
@@ -101,6 +104,15 @@
 \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
 \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
 
+\RecustomVerbatimEnvironment{Highlighting}{Verbatim}{
+  commandchars=\\\{\},
+  breaklines,
+  breakanywhere=true,
+  breaksymbolleft={},
+  fontsize=\footnotesize
+}
+\renewenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+
 
 \title{Modality-Driven Search with Holistic Trace Judging for ARC-AGI-2}
 \author{Johan
@@ -150,8 +162,8 @@ been rapid rather than stagnant: ARC Prize reports significant
 year-over-year improvements driven by frontier ``reasoning systems'' and
 application-layer refinement harnesses (Chollet et al. 2024).
 
-This paper describes an approach that treats \textbf{modalities as
-search operators} and uses \textbf{judging as the final selection
+This paper describes an ARC-AGI-2 solver that treats \textbf{modalities
+as search operators} and uses \textbf{judging as the final selection
 mechanism}: generate diverse candidate solutions across independent
 reasoning channels, then select among them using context-preserving
 holistic judging.\footnote{This work has not been peer-reviewed and is
@@ -163,16 +175,16 @@ holistic judging.\footnote{This work has not been peer-reviewed and is
 \begin{itemize}
 \tightlist
 \item
-  \textbf{A modality-driven search solver} that generates candidates
-  independently across text, image, and code reasoning channels to
-  produce diverse candidate solutions.
+  \textbf{A modality-driven search solver for ARC-AGI-2} that generates
+  candidates independently across text, image, and code reasoning
+  channels to produce diverse candidate solutions.
 \item
-  \textbf{A context-preserving holistic judge} that reads all candidate
-  traces jointly to select the best outputs. Unlike standard
-  self-consistency (majority vote) or per-candidate scoring, this judge
-  identifies correct \emph{minority} hypotheses by comparing full
-  reasoning traces in a single context window --- yielding +7 solved
-  instances over majority vote at only 13\% of total system cost
+  \textbf{A context-preserving holistic judge in this setting} that
+  reads all candidate traces jointly to select the best outputs. Unlike
+  standard self-consistency (majority vote) or per-candidate scoring,
+  this judge identifies correct \emph{minority} hypotheses by comparing
+  full reasoning traces in a single context window --- yielding +7
+  solved instances over majority vote at only 13\% of total system cost
   (Section 7).
 \item
   \textbf{Verified ARC-AGI-2 semi-private performance:} 72.9\% at
@@ -1982,6 +1994,52 @@ that judging contributes +7 solved instances (holistic selection) and +1
 (synthesis) at only 13\% of total cost, the judging phase is highly
 cost-effective relative to its accuracy contribution.
 
+\hypertarget{post-hoc-marginal-returns-under-staged-family-expansion}{%
+\subsubsection{Post-hoc marginal returns under staged family
+expansion}\label{post-hoc-marginal-returns-under-staged-family-expansion}}
+
+Using the 130-instance \textbf{complete-coverage subset} (where all 29
+candidates were generated), the existing run data also support a
+narrower post-hoc analysis of marginal oracle coverage under a
+hypothetical staged family expansion. This is an oracle-only analysis:
+judges are \textbf{not} re-run on reduced pools, so the numbers should
+be interpreted as lower bounds on the value of adding later candidate
+families.
+
+\textbf{Table 8. Post-hoc marginal oracle coverage under staged family
+expansion on the complete-coverage subset (n = 130).}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Candidate budget
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Families included
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Oracle-solvable instances
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Marginal gain vs previous stage
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+8 candidates & Text only & 84 / 130 (64.6\%) & -- \\
+18 candidates & Text + Image & 101 / 130 (77.7\%) & +17 \\
+29 candidates & Text + Image + Code & 108 / 130 (83.1\%) & +7 \\
+\end{longtable}
+
+The main takeaway is modest but useful: additional candidate families
+are \textbf{not equally valuable}, and staged expansion can recover
+meaningful oracle coverage beyond a cheap base. Because this is a
+post-hoc oracle analysis under one ordering, it should be read only as
+evidence for \textbf{modality-aware adaptive routing}, not as a
+definitive ranking of family quality.
+
 \hypertarget{modality-ablations-oracle-level-only}{%
 \subsection{Modality ablations (oracle-level
 only)}\label{modality-ablations-oracle-level-only}}
@@ -2043,11 +2101,10 @@ work.
   sequential approaches reduced diversity, but a controlled comparison
   with matched compute budgets has not been performed.
 \item
-  \textbf{Candidate budget scaling:} sweep the number of candidates per
-  modality/model to estimate marginal returns per additional candidate
-  and identify diminishing-returns regimes. The current system uses 29
-  candidates, but it is unknown whether 15 or 50 would yield
-  meaningfully different accuracy at proportionally different cost.
+  \textbf{Matched candidate budget scaling:} rerun the full pipeline at
+  multiple budget points and with multiple routing orders to estimate
+  marginal returns under controlled conditions. Table 8 provides only a
+  post-hoc oracle lower bound, not a full end-to-end scaling curve.
 \item
   \textbf{Per-model contribution:} isolate the contribution of each
   foundation model (GPT-5.2, Gemini 3, Opus 4.5) by running the pipeline
@@ -2314,10 +2371,36 @@ diverse candidate generation with context-preserving selection:
 At the time of writing, this approach achieves the highest score on the
 ARC Prize Verified leaderboard (72.9\%), surpassing the best-performing
 standalone frontier models --- GPT-5.2 Pro (54.2\%) and Gemini 3 Pro
-(54.0\%) --- by +18.7 percentage points. This substantial margin
-suggests that orchestrating diverse reasoning modalities with principled
-selection is a more effective strategy for abstract reasoning than
-scaling any single model alone.
+(54.0\%) --- by +18.7 percentage points. Within ARC-AGI-2, this
+substantial margin suggests that orchestrating diverse reasoning
+modalities with principled selection is more effective than scaling any
+single model alone.
+
+The core contributions are architectural rather than model-specific.
+First, multi-modal candidate generation exploits the fact that text,
+image, and code representations activate different reasoning pathways,
+and each modality family contributes unique solves. Second, holistic
+judging over full traces recovers minority-correct solutions that
+majority voting discards, yielding +7 solved instances. Third, judge
+synthesis can produce a novel correct output from complementary partial
+insights when no candidate is fully correct. Although synthesis yields
+only +1 solved instance in this run, that case is qualitatively
+important: none of the 29 candidates was correct, yet the judge still
+produced the correct answer by recombining partial truths from multiple
+failures. This is evidence of compositional repair, not just better
+ranking.
+
+Any claim of broader generality should be stated cautiously. The current
+evidence comes only from ARC-AGI-2, so cross-benchmark transfer is
+unproven. The components that appear most plausibly portable are the
+high-level architectural ideas: generating diverse hypotheses across
+multiple representations, comparing full candidate traces jointly rather
+than relying only on majority agreement, and selectively attempting
+synthesis when partial truths are distributed across candidates. By
+contrast, ARC-specific elements such as the modality mix, the grid
+encodings and image renderings, the 29-candidate budget, and the pass@2
+aggregation setup should be viewed as task-tuned instantiations rather
+than universal prescriptions.
 
 \hypertarget{limitations}{%
 \subsection{Limitations}\label{limitations}}
@@ -2384,13 +2467,10 @@ simplifies the pipeline and avoids overfitting to task ordering, but it
 means the system cannot amortize its reasoning cost across related
 tasks.
 
-\textbf{Narrow evaluation domain.} The results are demonstrated on a
-single benchmark (ARC-AGI-2). While the architectural pattern ---
-diverse generation plus holistic judging --- is domain-general in
-principle, this paper provides no evidence that the approach transfers
-to other domains. The specific design choices (modality mix, candidate
-count, judge prompt structure) were tuned for ARC and may not generalize
-without adaptation.
+\textbf{Narrow evaluation domain.} The results are demonstrated only on
+ARC-AGI-2. The current evidence supports the architecture in this
+domain, but does not establish that it transfers to other tasks without
+adaptation.
 
 \hypertarget{future-work}{%
 \subsection{Future work}\label{future-work}}
@@ -2399,7 +2479,9 @@ without adaptation.
 \tightlist
 \item
   Adaptive routing: allocate expensive modalities only when uncertainty
-  is high.
+  is high. The post-hoc staged family analysis in Section 7 suggests
+  that later candidate families should be added in stages rather than
+  treated as equally valuable.
 \item
   Judge compression without premature abstraction: find ways to reduce
   context size while retaining the benefits of joint context.
@@ -2444,11 +2526,11 @@ without adaptation.
   modalities are most valuable for which problem classes.
 \item
   Domain transfer: the ``diverse generation + holistic judging'' pattern
-  is not specific to ARC. Any domain where models produce confident but
-  divergent answers --- mathematical proof search, legal analysis,
-  medical diagnosis --- could benefit from context-preserving
-  adjudication over multiple independent reasoning traces. Validating
-  this on non-ARC benchmarks is a natural next step.
+  may extend beyond ARC, but this paper does not establish that. Domains
+  where models produce confident but divergent answers --- mathematical
+  proof search, legal analysis, medical diagnosis --- are natural
+  testbeds for validating which parts of the architecture truly
+  transfer.
 \end{itemize}
 
 \hypertarget{a-note-on-ai-assisted-development}{%

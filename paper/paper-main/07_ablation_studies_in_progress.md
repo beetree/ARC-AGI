@@ -45,6 +45,20 @@ Table 6 reports the cost breakdown for the public evaluation run, averaged per t
 
 Candidate generation dominates overall cost at 87% of spend, with judging accounting for only 13%. Within generation, code candidates are the most expensive family (49% of generation cost), driven primarily by tool-integrated code generation with iterative sandbox execution. Given that judging contributes +7 solved instances (holistic selection) and +1 (synthesis) at only 13% of total cost, the judging phase is highly cost-effective relative to its accuracy contribution.
 
+#### Post-hoc marginal returns under staged family expansion
+
+Using the 130-instance **complete-coverage subset** (where all 29 candidates were generated), the existing run data also support a narrower post-hoc analysis of marginal oracle coverage under a hypothetical staged family expansion. This is an oracle-only analysis: judges are **not** re-run on reduced pools, so the numbers should be interpreted as lower bounds on the value of adding later candidate families.
+
+**Table 8. Post-hoc marginal oracle coverage under staged family expansion on the complete-coverage subset (n = 130).**
+
+| Candidate budget | Families included | Oracle-solvable instances | Marginal gain vs previous stage |
+| --- | --- | --- | --- |
+| 8 candidates | Text only | 84 / 130 (64.6%) | -- |
+| 18 candidates | Text + Image | 101 / 130 (77.7%) | +17 |
+| 29 candidates | Text + Image + Code | 108 / 130 (83.1%) | +7 |
+
+The main takeaway is modest but useful: additional candidate families are **not equally valuable**, and staged expansion can recover meaningful oracle coverage beyond a cheap base. Because this is a post-hoc oracle analysis under one ordering, it should be read only as evidence for **modality-aware adaptive routing**, not as a definitive ranking of family quality.
+
 ### Modality ablations (oracle-level only)
 
 Section 6.6 reports modality-level uniqueness on the **complete-coverage subset** (n = 130), where all modalities are executed. In this subset, the following **exclusive** oracle solvability counts are observed (Table 4): Text only = 2, Image only = 6, Code only = 7. These exclusive counts imply that removing any single modality would reduce candidate-oracle coverage by at least a few percent even before accounting for downstream judge interactions and selection effects.
@@ -61,7 +75,7 @@ The following ablations would strengthen the paper's claims but have not been ru
 
 - **End-to-end modality removal:** run the full pipeline with one modality family (text, image, or code) removed and re-run judging on the reduced candidate pool. The oracle-level exclusive counts in Section 7.2 provide a lower bound, but the actual end-to-end impact — including judge interaction effects — is unknown. This requires at minimum three full runs (~$7,200 total).
 - **Independent candidates vs sequential refinement:** hold compute fixed and compare N independent candidates (the current approach) against N sequential refinement steps (iterative prompt chaining or staged decomposition). Section 8 documents qualitative evidence that sequential approaches reduced diversity, but a controlled comparison with matched compute budgets has not been performed.
-- **Candidate budget scaling:** sweep the number of candidates per modality/model to estimate marginal returns per additional candidate and identify diminishing-returns regimes. The current system uses 29 candidates, but it is unknown whether 15 or 50 would yield meaningfully different accuracy at proportionally different cost.
+- **Matched candidate budget scaling:** rerun the full pipeline at multiple budget points and with multiple routing orders to estimate marginal returns under controlled conditions. Table 8 provides only a post-hoc oracle lower bound, not a full end-to-end scaling curve.
 - **Per-model contribution:** isolate the contribution of each foundation model (GPT-5.2, Gemini 3, Opus 4.5) by running the pipeline with one model removed entirely. Opus 4.5 contributes only 1 candidate; whether its inclusion is cost-justified relative to adding another GPT-5.2 or Gemini candidate is unknown.
 - **Temperature and sampling parameters:** the current system uses default or near-default sampling settings for each model. Sweeping temperature, top-p, and other sampling parameters within each modality could reveal whether diversity is better increased through sampling variation or through modality variation.
 - **Representation formats:** CSV vs alternative encodings (e.g., JSON-like arrays, Python list syntax, and object-abstraction encodings), evaluated under the same candidate/judge budgets. The benchmarking reported in Section 4 was performed during development with different model versions; a controlled evaluation on the final system would be more rigorous.

@@ -160,13 +160,15 @@ def build_latex(out_dir: Path, md_path: Path) -> Path:
         "--template",
         "template.tex",
         "--citeproc",
-        "--bibliography",
-        "refs.bib",
         "--resource-path",
         ".:figures",
         "-o",
         str(tex_path.name),
     ]
+    csl_path = out_dir / "csl" / "ieee.csl"
+    if csl_path.exists():
+        cmd.extend(["--csl", "csl/ieee.csl"])
+    cmd.extend(["--bibliography", "refs.bib"])
     _run(cmd, cwd=out_dir)
 
     # Post-process: replace longtable with tabular for two-column IEEE compatibility.
@@ -181,6 +183,13 @@ def build_latex(out_dir: Path, md_path: Path) -> Path:
     tex_content = tex_content.replace(
         r"\end{longtable}", r"\end{tabular}" + "\n" + r"\end{table}"
     )
+    tex_content = re.sub(
+        r"\\hypertarget\{acknowledgments\}\{%\s*\\subsection\{Acknowledgments\}\\label\{acknowledgments\}\}",
+        r"\\section*{Acknowledgment}",
+        tex_content,
+        flags=re.MULTILINE,
+    )
+    tex_content = tex_content.replace(r"\hypertarget{refs}{}", r"\section*{References}")
     _write_text(tex_path, tex_content)
 
     return tex_path
