@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1773598524.31474 "paper.tex" "paper.pdf" "paper" 1773598524.89306 0
+["pdflatex"] 1774826553.31645 "paper.tex" "paper.pdf" "paper" 1774826553.7807 0
   "/etc/texmf/web2c/texmf.cnf" 1770265130.99794 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -123,9 +123,9 @@
   "figures/methodology_matrix.png" 1770517161.29376 109437 448b884315faddb5187a8b072d8046bc ""
   "figures/pipeline.png" 1770517161.29376 155207 814bd547055a91f5fe6d2ed46730061e ""
   "figures/task_example.png" 1770517161.29376 91630 439b5d497769b82c061947b7d2b7fe6a ""
-  "paper.aux" 1773598524.83619 6029 d966360b5b67e326259d5ad9743bf15a "pdflatex"
-  "paper.out" 1773598524.83619 3480 f5b7760f437ad423f321337069d9902f "pdflatex"
-  "paper.tex" 1773598524.23219 55924 2cf4095cfb8bdb4bf115b3ecfe6ec6db ""
+  "paper.aux" 1774826553.74362 7205 8f02455a637a1fb7b4caf0c87089cf92 "pdflatex"
+  "paper.out" 1774826553.74362 3480 f5b7760f437ad423f321337069d9902f "pdflatex"
+  "paper.tex" 1774826553.25962 55399 e1143697435bba72e84c1b703edf9b3e ""
   (generated)
   "paper.aux"
   "paper.log"

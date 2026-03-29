@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.2.4)  15 MAR 2026 11:15
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.2.4)  29 MAR 2026 16:22
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -649,52 +649,50 @@ Underfull \hbox (badness 2050) in paragraph at lines 320--326
  []
 
 
-Underfull \hbox (badness 1888) in paragraph at lines 390--394
+Underfull \hbox (badness 1888) in paragraph at lines 388--392
 []\T1/ptm/b/n/10 Text method-ol-ogy. \T1/ptm/m/n/10 Text can-di-dates are gen-e
 r-ated by
  []
 
 [3 <./figures/pipeline.png (PNG copy)>]
 LaTeX Font Info:    Trying to load font information for TS1+pcr on input line 5
-20.
+18.
 
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1pcr.fd
 File: ts1pcr.fd 2001/06/04 font definitions for TS1/pcr.
 )
-Overfull \vbox (0.74991pt too high) detected at line 525
+Overfull \vbox (0.74991pt too high) detected at line 523
  []
 
 [4] [5]
-<figures/methodology_matrix.png, id=149, 547.04375pt x 2361.82375pt>
+<figures/methodology_matrix.png, id=151, 547.04375pt x 2361.82375pt>
 File: figures/methodology_matrix.png Graphic file (type png)
 <use figures/methodology_matrix.png>
-Package pdftex.def Info: figures/methodology_matrix.png  used on input line 704
+Package pdftex.def Info: figures/methodology_matrix.png  used on input line 685
 .
 (pdftex.def)             Requested size: 140.07443pt x 604.76176pt.
 
-Underfull \hbox (badness 1661) in paragraph at lines 714--720
+Underfull \hbox (badness 1661) in paragraph at lines 695--701
 \T1/ptm/m/n/10 method-olo-gies, I eval-u-ate each can-di-date out-put against
  []
 
 [6 <./figures/methodology_matrix.png (PNG copy)>]
-Overfull \hbox (2.44667pt too wide) in paragraph at lines 880--892
- [][] 
- []
+Underfull \vbox (badness 1205) has occurred while \output is active []
 
-[7]
-Underfull \hbox (badness 1371) in paragraph at lines 976--989
+ [7]
+Underfull \hbox (badness 1371) in paragraph at lines 932--945
 []\T1/ptm/b/n/10 Prescriptive prompt-ing de-grades per-for-mance. \T1/ptm/m/n/1
 0 Rea-
  []
 
 [8]
-Underfull \hbox (badness 10000) in paragraph at lines 1075--1075
+Underfull \hbox (badness 10000) in paragraph at lines 1031--1031
 [][][][]\T1/ptm/m/n/8 Source code: https://github.com/beetree/ARC-AGI. Public-e
 valuation
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1075--1075
+Underfull \hbox (badness 10000) in paragraph at lines 1031--1031
 \T1/ptm/m/n/8 run data: https://www.kaggle.com/code/johanland/johan-land-solver
 -v7-
  []
@@ -719,23 +717,23 @@ Package rerunfilecheck Info: File `paper.out' has not changed.
 (rerunfilecheck)             Checksum: F5B7760F437AD423F321337069D9902F;3480.
  ) 
 Here is how much of TeX's memory you used:
- 13360 strings out of 476182
- 209969 string characters out of 5795596
- 1950975 words of memory out of 5000000
+ 13368 strings out of 476182
+ 209986 string characters out of 5795596
+ 1953975 words of memory out of 5000000
  35085 multiletter control sequences out of 15000+600000
- 670516 words of font info for 154 fonts, out of 8000000 for 9000
+ 676839 words of font info for 157 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 71i,12n,79p,501b,584s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 71i,11n,79p,501b,584s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr
 /share/texlive/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/share/texliv
 e/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fo
 nts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/
 times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.p
 fb>
-Output written on paper.pdf (9 pages, 532484 bytes).
+Output written on paper.pdf (9 pages, 535485 bytes).
 PDF statistics:
- 251 PDF objects out of 1000 (max. 8388607)
- 221 compressed objects within 3 object streams
- 86 named destinations out of 1000 (max. 500000)
+ 258 PDF objects out of 1000 (max. 8388607)
+ 228 compressed objects within 3 object streams
+ 92 named destinations out of 1000 (max. 500000)
  192 words of extra memory for PDF output out of 10000 (max. 10000000)
 

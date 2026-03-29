@@ -1,0 +1,87 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: unrar-free
+Upstream-Contact: https://gitlab.com/bgermann/unrar-free/-/issues
+Source: https://gitlab.com/bgermann/unrar-free
+
+Files: *
+Copyright: 2022 Bastian Germann <bastiangermann@fishpost.de>
+           2021 Ying-Chun Liu (PaulLiu) <paulliu@debian.org>
+           2004 Ben Asselstine <benasselstine@canada.com>
+	   2004 Jeroen Dekkers <jeroen@dekkers.cx>
+	   2000-2002 Christian Scheurer (www.ChristianScheurer.ch)
+	   2000-2002 Johannes Winkelmann (jw@tks6.net)
+	   1993-2002 Eugene Roshal
+License: GPL-2+
+
+Files: src/unrar.c
+Copyright: 2004 Jeroen Dekkers <jeroen@dekkers.cx>
+           2004 Ben Asselstine <benasselstine@canada.com>
+           1990-2004 Info-ZIP
+License: GPL-2+ and Info-ZIP
+
+Files: debian/*
+Copyright: 2004 Niklas Vainio <nvainio+deb@iki.fi>
+	   2006 Ying-Chun Liu (PaulLiu) <grandpaul@gmail.com>
+License: GPL-2+
+
+License: GPL-2+
+ RAR decompression code is copyright (c) by Eugene Roshal. UniquE RAR
+ File Library is copyright (c) 2000-2002 by Christian Scheurer and
+ Johannes Winkelmann. Unrar is copyright (c) 2004 by Ben Asselstine.
+ .
+ You are free to distribute this software under the terms of
+ the GNU General Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at your option)
+ any later version.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ version 2 can be found in /usr/share/common-licenses/GPL-2.
+
+License: Info-ZIP
+ For the purposes of this copyright and license, "Info-ZIP" is defined as
+ the following set of individuals:
+ .
+   Mark Adler, John Bush, Karl Davis, Harald Denker, Jean-Michel Dubois,
+   Jean-loup Gailly, Hunter Goatley, Ian Gorman, Chris Herborth, Dirk Haase,
+   Greg Hartwig, Robert Heath, Jonathan Hudson, Paul Kienitz, David Kirschbaum,
+   Johnny Lee, Onno van der Linden, Igor Mandrichenko, Steve P. Miller,
+   Sergio Monesi, Keith Owens, George Petrov, Greg Roelofs, Kai Uwe Rommel,
+   Steve Salisbury, Dave Smith, Christian Spieler, Antoine Verheijen,
+   Paul von Behren, Rich Wales, Mike White
+ .
+ This software is provided "as is," without warranty of any kind, express
+ or implied.  In no event shall Info-ZIP or its contributors be held liable
+ for any direct, indirect, incidental, special or consequential damages
+ arising out of the use of or inability to use this software.
+ .
+ Permission is granted to anyone to use this software for any purpose,
+ including commercial applications, and to alter it and redistribute it
+ freely, subject to the following restrictions:
+ .
+    1. Redistributions of source code must retain the above copyright notice,
+       definition, disclaimer, and this list of conditions.
+ .
+    2. Redistributions in binary form (compiled executables) must reproduce
+       the above copyright notice, definition, disclaimer, and this list of
+       conditions in documentation and/or other materials provided with the
+       distribution.  The sole exception to this condition is redistribution
+       of a standard UnZipSFX binary (including SFXWiz) as part of a
+       self-extracting archive; that is permitted without inclusion of this
+       license, as long as the normal SFX banner has not been removed from
+       the binary or disabled.
+ .
+    3. Altered versions--including, but not limited to, ports to new operating
+       systems, existing ports with new graphical interfaces, and dynamic,
+       shared, or static library versions--must be plainly marked as such
+       and must not be misrepresented as being the original source.  Such
+       altered versions also must not be misrepresented as being Info-ZIP
+       releases--including, but not limited to, labeling of the altered
+       versions with the names "Info-ZIP" (or any variation thereof, including,
+       but not limited to, different capitalizations), "Pocket UnZip," "WiZ"
+       or "MacZip" without the explicit permission of Info-ZIP.  Such altered
+       versions are further prohibited from misrepresentative use of the
+       Zip-Bugs or Info-ZIP e-mail addresses or of the Info-ZIP URL(s).
+ .
+    4. Info-ZIP retains the right to use the names "Info-ZIP," "Zip," "UnZip,"
+       "UnZipSFX," "WiZ," "Pocket UnZip," "Pocket Zip," and "MacZip" for its
+       own source and binary releases.

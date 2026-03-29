@@ -1,0 +1,64 @@
+UNRAR-FREE
+==========
+
+Description
+-----------
+unrar-free is a free software version of the non-free unrar utility.
+This program is a simple command-line front-end to libarchive, and can list
+and extract RAR archives but also other formats supported by libarchive.
+It does not rival the non-free unrar in terms of features, but
+special care has been taken to ensure it meets most user's needs.
+
+User Documentation
+------------------
+This is an abstract of the unrar-free(1) man page:
+
+    Usage: unrar-free [OPTION...] ARCHIVE [FILE...] [DESTINATION]
+    Extract files from rar archives.
+ 
+      -x, --extract              Extract files from archive (default)
+      -t, --list                 List files in archive
+      -f, --force                Overwrite files when extracting
+      --extract-newer            Only extract newer files from the archive
+      --extract-no-paths         Don't create directories while extracting
+      -p, --password             Decrypt archive using a password
+      -?, --help                 Give this help list
+      --usage                    Give a short usage message
+      -V, --version              Print program version
+
+Development
+-----------
+Please use the issue tracker and merge requests that are part of the git
+hosting platform to hand in bug reports and patches.
+
+All changes have to be compatible with the GPL-2.0-or-later project license.
+If you do not include any license information with your changes, it is
+assumed that they are licensed under GPL-2.0-or-later.
+
+History
+-------
+unrar-free used to be developed on Gna! which was shut down.
+It is now maintained at https://gitlab.com/bgermann/unrar-free which holds
+most of the original CVS history that was exported via cvs-fast-export.
+
+There are changes that might be legally problematic and so the git tree is
+rebased on top of commit 745cb033fa ("add adddir function"), removing the
+problematic changes, and dropping some hunks from the usable changes.
+
+After the original upstream was shut down, most development on the project
+happened on the Debian package, which fixed several CVEs and added a man
+page with the changes licensed under GPL-2.0-or-later. These are imported
+into the tree.
+
+unrar-free used to incorporate the GPL'd UniquE RAR Library
+(https://www.unrarlib.org) by Christian Scheurer and Johannes Winkelmann.
+Bastian Germann reimplemented the program based on libarchive, which is one
+of two free software implementations with RAR 5.0 support as of Sep 2021.
+The Unarchiver has more advanced features but it is not developed with
+reusing as a library in other software in mind. The unarr library is based
+on it but it is a non-trivial port that lacks important features like RAR 5.0.
+So libarchive was the natural choice.
+
+There used to be an unar wrapper for unsupported archive types in older
+versions that was removed. If you need such a wrapper, please take a look
+at unrar_wrapper (https://github.com/openSUSE/unrar_wrapper).

@@ -137,6 +137,101 @@ def validate_self_contained(out_dir: Path, md_path: Path) -> None:
         )
 
 
+def _collect_until(lines: list[str], start: int, marker: str) -> tuple[str, int]:
+    try:
+        end = lines.index(marker, start)
+    except ValueError:
+        raise ValueError(f"Missing longtable marker: {marker}") from None
+    return "\n".join(lines[start:end]).strip(), end + 1
+
+
+def _convert_longtable_block(block_lines: list[str]) -> str:
+    prefix = r"\begin{longtable}[]{"
+    if not block_lines or not block_lines[0].startswith(prefix):
+        return "\n".join(block_lines)
+
+    colspec_lines: list[str] = []
+    first_rest = block_lines[0][len(prefix) :]
+    idx = 1
+    if first_rest.endswith("}"):
+        colspec_lines.append(first_rest[:-1])
+    else:
+        colspec_lines.append(first_rest)
+        while idx < len(block_lines):
+            line = block_lines[idx]
+            if line.endswith("}"):
+                colspec_lines.append(line[:-1])
+                idx += 1
+                break
+            colspec_lines.append(line)
+            idx += 1
+
+    caption = ""
+    if idx < len(block_lines) and block_lines[idx].startswith(r"\caption{"):
+        caption_lines: list[str] = []
+        while idx < len(block_lines):
+            line = block_lines[idx]
+            if line.endswith(r"\tabularnewline"):
+                caption_lines.append(line.removesuffix(r"\tabularnewline"))
+                idx += 1
+                break
+            caption_lines.append(line)
+            idx += 1
+        caption = "\n".join(caption_lines).strip()
+
+    try:
+        firsthead, idx = _collect_until(block_lines, idx, r"\endfirsthead")
+        _, idx = _collect_until(block_lines, idx, r"\endhead")
+        lastfoot, idx = _collect_until(block_lines, idx, r"\endlastfoot")
+        body, idx = _collect_until(block_lines, idx, r"\end{longtable}")
+    except ValueError:
+        return "\n".join(block_lines)
+
+    parts = [r"\begin{table}[htbp]"]
+    if caption:
+        parts.append(caption)
+    parts.extend(
+        [
+            r"\centering",
+            r"\footnotesize",
+            rf"\begin{{tabular}}{{{'\n'.join(colspec_lines)}}}",
+        ]
+    )
+    if firsthead:
+        parts.append(firsthead)
+    if body:
+        parts.append(body)
+    if lastfoot:
+        parts.append(lastfoot)
+    parts.extend([r"\end{tabular}", r"\end{table}"])
+    return "\n".join(parts)
+
+
+def _convert_longtables(tex_content: str) -> str:
+    lines = tex_content.splitlines()
+    out_lines: list[str] = []
+    idx = 0
+
+    while idx < len(lines):
+        if lines[idx].startswith(r"\begin{longtable}[]{"):
+            block_lines = [lines[idx]]
+            idx += 1
+            while idx < len(lines):
+                block_lines.append(lines[idx])
+                if lines[idx] == r"\end{longtable}":
+                    break
+                idx += 1
+            out_lines.extend(_convert_longtable_block(block_lines).splitlines())
+        else:
+            out_lines.append(lines[idx])
+        idx += 1
+
+    converted = "\n".join(out_lines)
+    if tex_content.endswith("\n"):
+        converted += "\n"
+    return converted
+
+
 def build_latex(out_dir: Path, md_path: Path) -> Path:
     if _which("pandoc") is None:
         raise FileNotFoundError(
@@ -173,16 +268,7 @@ def build_latex(out_dir: Path, md_path: Path) -> Path:
 
     # Post-process: replace longtable with tabular for two-column IEEE compatibility.
     tex_content = _read_text(tex_path)
-    tex_content = re.sub(
-        r"\\begin\{longtable\}\[]\{([^}]*)\}",
-        r"\\begin{table}[htbp]\n\\centering\n\\footnotesize\n\\begin{tabular}{\1}",
-        tex_content,
-    )
-    tex_content = tex_content.replace(r"\endhead", "")
-    tex_content = tex_content.replace(r"\endlastfoot", "")
-    tex_content = tex_content.replace(
-        r"\end{longtable}", r"\end{tabular}" + "\n" + r"\end{table}"
-    )
+    tex_content = _convert_longtables(tex_content)
     tex_content = re.sub(
         r"\\hypertarget\{acknowledgments\}\{%\s*\\subsection\{Acknowledgments\}\\label\{acknowledgments\}\}",
         r"\\section*{Acknowledgment}",
