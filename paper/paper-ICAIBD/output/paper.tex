@@ -41,20 +41,25 @@
 % Pandoc emits \tightlist for compact lists in some outputs.
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+% Pandoc 3.2+ wraps figures in \pandocbounded; no-op shim for templates that don't define it.
+\providecommand{\pandocbounded}[1]{#1}
 
 % Support for Pandoc --citeproc output.
 \newlength{\cslhangindent}
 \setlength{\cslhangindent}{1.5em}
 \newlength{\csllabelwidth}
 \setlength{\csllabelwidth}{3em}
-\newenvironment{CSLReferences}[2] % #1 hanging indent, #2 entry spacing
-  {\setlength{\parindent}{0pt}%
-   \setlength{\parskip}{#2\baselineskip}%
-   \ifodd #1\relax
-     \setlength{\leftskip}{\cslhangindent}%
-     \setlength{\parindent}{-\cslhangindent}%
-   \fi}
-  {}
+\providecommand{\citeproctext}{}
+\newenvironment{CSLReferences}[2] % #1 hanging indent (ignored), #2 entry spacing
+  {\begin{list}{}{%
+     \setlength{\leftmargin}{\csllabelwidth}%
+     \setlength{\labelwidth}{\csllabelwidth}%
+     \setlength{\labelsep}{0pt}%
+     \setlength{\itemindent}{0pt}%
+     \setlength{\itemsep}{#2\baselineskip}%
+     \setlength{\parsep}{0pt}%
+   }}
+  {\end{list}}
 \newcommand{\CSLBlock}[1]{#1\par}
 \newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
 \newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}}
@@ -151,8 +156,7 @@ ARC, ARC-AGI-2, large language models, multimodal reasoning, program
 synthesis, LLM-as-a-judge
 \end{IEEEkeywords}
 
-\hypertarget{introduction}{%
-\section{Introduction}\label{introduction}}
+\section{Introduction}\label{introduction}
 
 A central challenge in applying LLMs to abstract reasoning is not just
 producing candidate solutions, but \textbf{knowing what is right and
@@ -175,8 +179,7 @@ holistic judging.\footnote{An extended version of this paper with
   transcripts, and additional ablation details is available as a
   preprint {[}2{]}.}
 
-\hypertarget{contributions}{%
-\subsection{Contributions}\label{contributions}}
+\subsection{Contributions}\label{contributions}
 
 \begin{itemize}
 \tightlist
@@ -207,9 +210,7 @@ holistic judging.\footnote{An extended version of this paper with
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\hypertarget{background-and-related-work}{%
-\section{Background and Related
-Work}\label{background-and-related-work}}
+\section{Background and Related Work}\label{background-and-related-work}
 
 The Abstraction and Reasoning Corpus (ARC) was introduced by {[}3{]} as
 a benchmark for measuring intelligence as skill-acquisition
@@ -226,8 +227,8 @@ representative task.
 
 \begin{figure}
 \centering
-\includegraphics{figures/task_example.png}
-\caption{ARC-AGI-2 task \texttt{3dc255db}. A human might see
+\pandocbounded{\includegraphics[keepaspectratio,alt={ARC-AGI-2 task 3dc255db. A human might see ``spaceships'' with particles on the exhaust side. The transformation removes the particles from the interior and extends them from the nose. Three training pairs (rows 1--3) demonstrate the rule; the test input (row 4) must be solved from these examples alone. This task remains unsolved by the system.}]{figures/task_example.png}}
+\caption{ARC-AGI-2 task \protect\texttt{3dc255db}. A human might see
 ``spaceships'' with particles on the exhaust side. The transformation
 removes the particles from the interior and extends them from the nose.
 Three training pairs (rows 1--3) demonstrate the rule; the test input
@@ -266,8 +267,7 @@ than scalar scoring or consensus compression.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\hypertarget{method}{%
-\section{Method}\label{method}}
+\section{Method}\label{method}
 
 The solver is built around a practical observation: to solve tasks that
 frontier systems do not already solve, the correct solution is often a
@@ -280,14 +280,13 @@ least one candidate captures a genuinely novel hypothesis. Each modality
 provides a structurally different representation of the same task, which
 empirically produces candidates that cluster differently (Section IV-E).
 
-\hypertarget{pipeline-overview}{%
-\subsection{Pipeline Overview}\label{pipeline-overview}}
+\subsection{Pipeline Overview}\label{pipeline-overview}
 
 Fig. 2 shows the end-to-end pipeline. For each ARC task:
 
 \begin{figure}
 \centering
-\includegraphics{figures/pipeline.png}
+\pandocbounded{\includegraphics[keepaspectratio,alt={System pipeline overview.}]{figures/pipeline.png}}
 \caption{System pipeline overview.}
 \end{figure}
 
@@ -341,9 +340,8 @@ coherent.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\hypertarget{multimodal-candidate-generation}{%
 \subsection{Multimodal Candidate
-Generation}\label{multimodal-candidate-generation}}
+Generation}\label{multimodal-candidate-generation}
 
 Candidate generation is performed via three foundation models across
 multiple inference configurations: \textbf{Gemini 3 Preview} in a
@@ -452,9 +450,8 @@ strategy, contributing the majority of code candidates.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\hypertarget{context-preserving-holistic-judging}{%
 \subsection{Context-Preserving Holistic
-Judging}\label{context-preserving-holistic-judging}}
+Judging}\label{context-preserving-holistic-judging}
 
 Given 8--29 candidates per task, many are plausible and internally
 coherent. Worse, models tend to \textbf{cluster} around the same wrong
@@ -559,11 +556,9 @@ candidate order across runs is a natural improvement.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\hypertarget{experiments-and-results}{%
-\section{Experiments and Results}\label{experiments-and-results}}
+\section{Experiments and Results}\label{experiments-and-results}
 
-\hypertarget{evaluation-protocol}{%
-\subsection{Evaluation Protocol}\label{evaluation-protocol}}
+\subsection{Evaluation Protocol}\label{evaluation-protocol}
 
 ARC-AGI-2 provides public, semi-private, and private evaluation sets,
 all calibrated and scored under \textbf{pass@2} {[}1{]}. ARC Prize
@@ -575,8 +570,7 @@ tasks unseen during development, and the \textasciitilde3
 percentage-point gap between public and semi-private scores suggests
 limited overfitting.
 
-\hypertarget{headline-results}{%
-\subsection{Headline Results}\label{headline-results}}
+\subsection{Headline Results}\label{headline-results}
 
 The solver was submitted to the ARC Prize foundation on December 15,
 2025, with official results announced on February 3, 2026. The
@@ -642,8 +636,7 @@ leaderboard evolves rapidly, the contribution is the
 \textbf{architectural pattern} rather than the specific accuracy
 numbers.
 
-\hypertarget{efficiency}{%
-\subsection{Efficiency}\label{efficiency}}
+\subsection{Efficiency}\label{efficiency}
 
 ARC-AGI-2 explicitly evaluates efficiency {[}1{]}. The roughly 2x cost
 difference between the semi-private and public runs (\$38.99
@@ -656,8 +649,7 @@ achieving a +21.9 percentage-point accuracy gain, and is both cheaper
 and more accurate than Gemini 3 Pro (\$30.57/task at 54.0\%). A detailed
 cost breakdown is provided in Section V.
 
-\hypertarget{modality-contribution}{%
-\subsection{Modality Contribution}\label{modality-contribution}}
+\subsection{Modality Contribution}\label{modality-contribution}
 
 The final modality mix was selected based on both raw solve contribution
 and diversity contribution (uniquely solved tasks that other modalities
@@ -682,15 +674,14 @@ selection.
 
 \begin{figure}
 \centering
-\includegraphics{figures/methodology_matrix.png}
+\pandocbounded{\includegraphics[keepaspectratio,alt={Methodology matrix over public evaluation instances. Green = correct candidate; red = incorrect candidate; white = candidate not produced due to early stopping.}]{figures/methodology_matrix.png}}
 \caption{Methodology matrix over public evaluation instances. Green =
 correct candidate; red = incorrect candidate; white = candidate not
 produced due to early stopping.}
 \end{figure}
 
-\hypertarget{modality-complementarity-public-eval}{%
 \subsection{Modality Complementarity (Public
-Eval)}\label{modality-complementarity-public-eval}}
+Eval)}\label{modality-complementarity-public-eval}
 
 To quantify complementarity between candidate-generation methodologies,
 I evaluate each candidate output against ground truth and record a
@@ -727,9 +718,8 @@ redundant copies of the same reasoning process, and supports treating
 each modality as a separate exploration channel in the
 candidate-generation phase.
 
-\hypertarget{judging-and-synthesis-public-eval}{%
 \subsection{Judging and Synthesis (Public
-Eval)}\label{judging-and-synthesis-public-eval}}
+Eval)}\label{judging-and-synthesis-public-eval}
 
 Holistic judging (excluding synthesis) yielded a net uplift of
 \textbf{+7 solved instances} relative to a majority-vote baseline that
@@ -779,8 +769,7 @@ construct a correct answer by recombining partial insights.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\hypertarget{ablation-studies}{%
-\section{Ablation Studies}\label{ablation-studies}}
+\section{Ablation Studies}\label{ablation-studies}
 
 Rigorous component attribution would require multiple full-pipeline
 reruns, each costing about \$2,400 in API spend (Table V). This section
@@ -790,8 +779,7 @@ effects. Unless otherwise stated, ``solved'' refers to pass@2 at the
 \textbf{test-instance} level on the 167-instance public evaluation
 split.
 
-\hypertarget{measured-ablations}{%
-\subsection{Measured Ablations}\label{measured-ablations}}
+\subsection{Measured Ablations}\label{measured-ablations}
 
 \begin{table}[htbp]
 \caption{Measured judge ablations on the public evaluation run.}
@@ -820,8 +808,7 @@ partial insights when no candidate is fully correct. While the measured
 synthesis count is small in this run, the mechanism is most relevant on
 harder tasks where no single candidate fully solves the problem.
 
-\hypertarget{cost-attribution}{%
-\subsection{Cost Attribution}\label{cost-attribution}}
+\subsection{Cost Attribution}\label{cost-attribution}
 
 \begin{table}[htbp]
 \caption{Cost attribution per test instance on the public evaluation run (n = 167).}
@@ -895,8 +882,7 @@ routing}. This complements the early-stopping result: 37/167 instances
 terminated after the initial 8-candidate probe, and 36 of those 37 were
 solved correctly.
 
-\hypertarget{unperformed-ablations}{%
-\subsection{Unperformed Ablations}\label{unperformed-ablations}}
+\subsection{Unperformed Ablations}\label{unperformed-ablations}
 
 The following ablations would strengthen the paper's claims but have not
 been run due to cost constraints (\textasciitilde\$2,400 per full run):
@@ -922,8 +908,7 @@ been run due to cost constraints (\textasciitilde\$2,400 per full run):
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\hypertarget{negative-results}{%
-\section{Negative Results}\label{negative-results}}
+\section{Negative Results}\label{negative-results}
 
 Several development ideas were discarded because they reduced diversity
 or increased brittleness. Two findings stand out for their direct impact
@@ -961,8 +946,7 @@ semantics on orientation-dependent problems.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\hypertarget{discussion-and-conclusion}{%
-\section{Discussion and Conclusion}\label{discussion-and-conclusion}}
+\section{Discussion and Conclusion}\label{discussion-and-conclusion}
 
 This paper demonstrates that strong ARC-AGI-2 performance can be
 achieved by treating \textbf{modalities as search operators} and
@@ -998,8 +982,7 @@ such as the grid encodings, the image-rendering setup, the 29-candidate
 budget, and the pass@2 aggregation rule should be viewed as task-tuned
 choices rather than universal prescriptions.
 
-\hypertarget{limitations}{%
-\subsection{Limitations}\label{limitations}}
+\subsection{Limitations}\label{limitations}
 
 \textbf{Cost and practical scalability.} The system spends
 \$19.69--\$38.99 per task -- far more than a single model call. ARC
@@ -1030,8 +1013,7 @@ versions drift.\footnote{Source code:
   https://github.com/beetree/ARC-AGI. Public-evaluation run data:
   https://www.kaggle.com/code/johanland/johan-land-solver-v7-public/comments?scriptVersionId=290052212.}
 
-\hypertarget{future-directions}{%
-\subsection{Future Directions}\label{future-directions}}
+\subsection{Future Directions}\label{future-directions}
 
 Two directions appear most promising. \textbf{Adaptive routing} would
 allocate expensive modalities only when early-stage candidates show low
@@ -1044,106 +1026,106 @@ when candidate agreement is low or when multiple candidates contain
 complementary partial solutions, potentially amplifying the +1 instance
 uplift observed here.
 
-\section*{Acknowledgment}
+\subsection{Acknowledgments}\label{acknowledgments}
 
 Thank you to the ARC-AGI Discord community for valuable discussion and
 shared insights throughout the development of this work, and to Greg
 Kamradt at ARC Prize for conducting the official semi-private
 evaluation.
 
-\section*{References}
+\protect\phantomsection\label{refs}
 \begin{CSLReferences}{0}{0}
-\leavevmode\vadjust pre{\hypertarget{ref-arcprize2024report}{}}%
+\bibitem[\citeproctext]{ref-arcprize2024report}
 \CSLLeftMargin{{[}1{]} }%
 \CSLRightInline{F. Chollet, M. Knoop, G. Kamradt, and B. Landers,
 {``{ARC Prize 2024}: Technical report,''} \emph{arXiv preprint
 arXiv:2412.04604}, 2024.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-land2026modality}{}}%
+\bibitem[\citeproctext]{ref-land2026modality}
 \CSLLeftMargin{{[}2{]} }%
 \CSLRightInline{J. Land, {``Modality-driven search with holistic trace
 judging for {ARC-AGI-2},''} \emph{arXiv preprint}, 2026.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-chollet2019measure}{}}%
+\bibitem[\citeproctext]{ref-chollet2019measure}
 \CSLLeftMargin{{[}3{]} }%
 \CSLRightInline{F. Chollet, {``On the measure of intelligence,''}
 \emph{arXiv preprint arXiv:1911.01547}, 2019.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-ferre2021arc}{}}%
+\bibitem[\citeproctext]{ref-ferre2021arc}
 \CSLLeftMargin{{[}4{]} }%
 \CSLRightInline{S. Ferré, {``First steps of an approach to the {ARC}
 challenge based on descriptive grid models and the minimum description
 length principle,''} \emph{arXiv preprint arXiv:2112.00848}, 2021.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-li2024induction}{}}%
+\bibitem[\citeproctext]{ref-li2024induction}
 \CSLLeftMargin{{[}5{]} }%
 \CSLRightInline{W.-D. Li \emph{et al.}, {``Combining induction and
 transduction for abstract reasoning,''} in \emph{International
 conference on learning representations}, 2025.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-akyurek2024surprising}{}}%
+\bibitem[\citeproctext]{ref-akyurek2024surprising}
 \CSLLeftMargin{{[}6{]} }%
 \CSLRightInline{E. Akyürek \emph{et al.}, {``The surprising
 effectiveness of test-time training for few-shot learning,''} in
 \emph{Proceedings of the 42nd international conference on machine
 learning}, in PMLR, vol. 267. 2025, pp. 942--963.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-bonnet2024latent}{}}%
+\bibitem[\citeproctext]{ref-bonnet2024latent}
 \CSLLeftMargin{{[}7{]} }%
 \CSLRightInline{M. V. Macfarlane and C. Bonnet, {``Searching latent
 program spaces,''} in \emph{Advances in neural information processing
 systems}, 2025.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-wei2022chain}{}}%
+\bibitem[\citeproctext]{ref-wei2022chain}
 \CSLLeftMargin{{[}8{]} }%
 \CSLRightInline{J. Wei \emph{et al.}, {``Chain-of-thought prompting
 elicits reasoning in large language models,''} \emph{Advances in Neural
 Information Processing Systems}, vol. 35, 2022.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-wang2022selfconsistency}{}}%
+\bibitem[\citeproctext]{ref-wang2022selfconsistency}
 \CSLLeftMargin{{[}9{]} }%
 \CSLRightInline{X. Wang \emph{et al.}, {``Self-consistency improves
 chain of thought reasoning in language models,''} in \emph{International
 conference on learning representations}, 2023.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-yao2023tree}{}}%
+\bibitem[\citeproctext]{ref-yao2023tree}
 \CSLLeftMargin{{[}10{]} }%
 \CSLRightInline{S. Yao \emph{et al.}, {``Tree of thoughts: Deliberate
 problem solving with large language models,''} in \emph{Advances in
 neural information processing systems}, 2023.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-yao2022react}{}}%
+\bibitem[\citeproctext]{ref-yao2022react}
 \CSLLeftMargin{{[}11{]} }%
 \CSLRightInline{S. Yao \emph{et al.}, {``{ReAct}: Synergizing reasoning
 and acting in language models,''} \emph{International Conference on
 Learning Representations}, 2023.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-gao2023pal}{}}%
+\bibitem[\citeproctext]{ref-gao2023pal}
 \CSLLeftMargin{{[}12{]} }%
 \CSLRightInline{L. Gao \emph{et al.}, {``{PAL}: Program-aided language
 models,''} \emph{International Conference on Machine Learning}, 2023.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-madaan2023selfrefine}{}}%
+\bibitem[\citeproctext]{ref-madaan2023selfrefine}
 \CSLLeftMargin{{[}13{]} }%
 \CSLRightInline{A. Madaan \emph{et al.}, {``Self-refine: Iterative
 refinement with self-feedback,''} \emph{Advances in Neural Information
 Processing Systems}, vol. 36, 2023.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-shinn2023reflexion}{}}%
+\bibitem[\citeproctext]{ref-shinn2023reflexion}
 \CSLLeftMargin{{[}14{]} }%
 \CSLRightInline{N. Shinn, F. Cassano, A. Gopinath, K. Narasimhan, and S.
 Yao, {``Reflexion: Language agents with verbal reinforcement
 learning,''} \emph{Advances in Neural Information Processing Systems},
 vol. 36, 2023.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-snell2024scaling}{}}%
+\bibitem[\citeproctext]{ref-snell2024scaling}
 \CSLLeftMargin{{[}15{]} }%
 \CSLRightInline{C. Snell, J. Lee, K. Xu, and A. Kumar, {``Scaling {LLM}
 test-time compute optimally can be more effective than scaling model
 parameters,''} in \emph{International conference on learning
 representations}, 2025.}
 
-\leavevmode\vadjust pre{\hypertarget{ref-zheng2023judging}{}}%
+\bibitem[\citeproctext]{ref-zheng2023judging}
 \CSLLeftMargin{{[}16{]} }%
 \CSLRightInline{L. Zheng \emph{et al.}, {``Judging {LLM}-as-a-judge with
 {MT-Bench} and {Chatbot Arena},''} \emph{Advances in Neural Information

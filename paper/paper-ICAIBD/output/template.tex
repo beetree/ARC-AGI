@@ -41,6 +41,8 @@
 % Pandoc emits \tightlist for compact lists in some outputs.
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+% Pandoc 3.2+ wraps figures in \pandocbounded; no-op shim for templates that don't define it.
+\providecommand{\pandocbounded}[1]{#1}
 
 $if(csl-refs)$
 % Support for Pandoc --citeproc output.
@@ -48,14 +50,17 @@ $if(csl-refs)$
 \setlength{\cslhangindent}{1.5em}
 \newlength{\csllabelwidth}
 \setlength{\csllabelwidth}{3em}
-\newenvironment{CSLReferences}[2] % #1 hanging indent, #2 entry spacing
-  {\setlength{\parindent}{0pt}%
-   \setlength{\parskip}{#2\baselineskip}%
-   \ifodd #1\relax
-     \setlength{\leftskip}{\cslhangindent}%
-     \setlength{\parindent}{-\cslhangindent}%
-   \fi}
-  {}
+\providecommand{\citeproctext}{}
+\newenvironment{CSLReferences}[2] % #1 hanging indent (ignored), #2 entry spacing
+  {\begin{list}{}{%
+     \setlength{\leftmargin}{\csllabelwidth}%
+     \setlength{\labelwidth}{\csllabelwidth}%
+     \setlength{\labelsep}{0pt}%
+     \setlength{\itemindent}{0pt}%
+     \setlength{\itemsep}{#2\baselineskip}%
+     \setlength{\parsep}{0pt}%
+   }}
+  {\end{list}}
 \newcommand{\CSLBlock}[1]{#1\par}
 \newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
 \newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}}
