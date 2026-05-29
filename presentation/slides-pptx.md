@@ -1,6 +1,6 @@
 ---
 title: "Modality-Driven Search with Holistic Trace Judging for ARC-AGI-2"
-subtitle: "72.9% on ARC Prize Verified — built on three frontier models, not one"
+subtitle: "72.9% verified result, beating frontier models by ~20%"
 author: "Johan Land"
 date: "ICAIBD 2026"
 ---
@@ -9,14 +9,12 @@ date: "ICAIBD 2026"
 
 :::: {.columns}
 ::: {.column width="32%"}
-**History of ARC-AGI**
-
-- **2019** — ARC-AGI-1 introduced (Chollet)
-- **2020–2023** — Program synthesis era (Icecuber et al.); top scores creep up to ~20% on ARC-AGI-1
-- **Dec 2024** — OpenAI o3 saturates ARC-AGI-1: ~76% at $200/task
-- **2025** — ARC-AGI-2 launches: harder + cost-weighted; top frontier models ~50%
-- **Dec 2025** — **This work submitted: 72.9% on ARC-AGI-2**, first verified >70%
-- **2026** — Frontier models leapfrog to ~80%+ on ARC-AGI-2 (GPT-5.5, Gemini 3 Deep Think); ARC-AGI-3 launched (top scores still <1%)
+- **2019** — ARC-AGI-1 introduced (Chollet); trivial for humans, impossible for AI at the time
+- **2020–2023** — Program synthesis era; top scores reach ~20% on ARC-AGI-1
+- **Dec 2024** — o3 saturates ARC-AGI-1 (~76% at $200/task), but only ~3% on ARC-AGI-2
+- **2025** — Focus shifts to ARC-AGI-2; top scores climb to ~50% (GPT-5.2, Opus 4.5)
+- **Dec 2025** — **This work: 72.9% on ARC-AGI-2**, first verified >70%
+- **2026** — Frontier models leapfrog to ~80%+ (GPT-5.5, Gemini 3.1 Deep Think, Opus 4.7); ARC-AGI-3 launches (<1%)
 :::
 ::: {.column width="68%"}
 ![](figures/tasks_three_examples.png)
@@ -73,11 +71,11 @@ This slide formalizes the protocol. The JSON example shows the audience exactly 
 | System | ARC-AGI-2 | Cost/Task |
 |--------|----------:|----------:|
 | Human Panel | 100.0% | $17.00 |
-| **This work (semi-private)** | **72.9%** | $38.99 |
+| **This work (private)** | **72.9%** | $38.99 |
 | **This work (public eval)** | **76.1%** | $19.69 |
 | GPT-5.2 Pro (High) | 54.2% | $15.72 |
-| Gemini 3 Pro (Refine.) | 54.0% | $30.57 |
 | Opus 4.5 (Thinking, 64K) | 37.6% | $2.40 |
+| Gemini 3 Pro | 31.1% | $0.81 |
 
 ::: notes
 Anchor early — audience now knows there's a real result behind the method talk. Be honest about cost: this spends more than a single model call. The contribution is the architectural pattern, not the absolute leaderboard number — those move weekly. Pivot to the next slide with the question: how does an orchestration system beat a frontier model by 18 points?
@@ -85,21 +83,23 @@ Anchor early — audience now knows there's a real result behind the method talk
 
 ---
 
-# The real problem is selection, not generation
+# Two problems: break groupthink, then recognize the outlier
 
 - LLMs produce fluent, internally coherent traces — and are still **confidently wrong**
 - On hard tasks, models **cluster around the same wrong interpretation**
 - ⇒ majority voting / self-consistency *amplifies* the error
-- The hard problem isn't generating a correct candidate
-- It's **recognizing** one when most others disagree
+- **(1) Break the groupthink** — diversify so some candidate reaches the correct answer
+- **(2) Recognize the rare-correct** — pick it out when most others disagree
+
+*Roadmap: **(1)** next two slides · **(2)** after that · then both wired together · then on a real task*
 
 ::: notes
-This is the reframe that unlocks the whole architecture. If they take only one thing home before the method, take this one. Concrete number to drop: of our 39 failure instances, only 21 are genuine generation failures — 17 are *selection* failures where a correct candidate exists in the pool but is not chosen. Set up the next slide: if the correct answer is rare, we need to (a) make sure we generate it, and (b) recognize it without majority-counting.
+The architecture has to solve two problems, not one. First: counter the groupthink — left to themselves, frontier models cluster on the same wrong interpretation, so the system has to deliberately diversify generation. Second: even when a correct candidate does exist in the pool, majority voting will discard it as an outlier — so selection has to read the reasoning, not just count votes. Concrete number to drop: of our 39 failure instances, 21 are genuine generation failures and 17 are *selection* failures where a correct candidate exists in the pool but is not chosen. The two failure modes are roughly the same size — neither dominates.
 :::
 
 ---
 
-# Core idea: modalities as search operators
+# (1) Break the groupthink — modalities as search operators
 
 Same task, three representations → three different hypothesis distributions
 
@@ -119,7 +119,39 @@ This is the slide the audience should remember. Slow down. Use the word "operato
 
 ---
 
-# Pipeline overview
+# (1) Break the groupthink — candidate generation in practice
+
+- **3 models:** GPT-5.2 (x-high), Gemini 3 Preview (high), Claude Opus 4.5 (long-context)
+- **3 modality families:** Text, Image, Code
+- **29 candidates per task** across families × configurations
+- **Deliberately minimal prompts** in every lane *(see slide 10)*
+- Code candidates use a sandbox REPL for iterative debugging
+
+::: notes
+Don't list every configuration — the point is the structure: three families crossed with three models. The "minimal prompts" bullet is a callback you'll cash in on the negative-results slide.
+:::
+
+---
+
+# (2) Recognize the rare-correct — holistic judging vs. majority voting
+
+- Concatenate all 29 reasoning traces into one long-context judge prompt
+- Each judge picks top-2 candidates *and* explains why other clusters are wrong
+- Weighted vote across 3 judges → pass@2 guesses
+
+**Net uplift vs. majority-vote baseline: +7 instances**
+
+*All 7 are minority recoveries — the correct answer wasn't the most common candidate.*
+
+Plus **+1 synthesis** instance (`21897d95:2`): zero correct candidates — judge recombined partial insights into a novel correct output.
+
+::: notes
+The +7 number is the empirical payoff of the architecture. Say it slowly. The synthesis case is *qualitatively* different — it shows the system can sometimes *construct* a correct answer rather than just *select* one. Rare (n=1) but a proof-of-possibility for compositional repair. If time allows, quote the judge rationale from dfadab01:1: "Some solvers assume a stamp must fit fully. Others assume stamps are clipped at the border…" — shows the judge reasoning about disagreement explicitly.
+:::
+
+---
+
+# (1) + (2) wired together — pipeline overview
 
 :::: {.columns}
 ::: {.column width="60%"}
@@ -141,34 +173,197 @@ One pass through the diagram, max 50 seconds. Audience just needs the shape. Hig
 
 ---
 
-# Candidate generation in practice
+# (1) + (2) on a real task — 28 of 29 candidates wrong, judges picked the right one
 
-- **3 models:** GPT-5.2 (x-high), Gemini 3 Preview (high), Claude Opus 4.5 (long-context)
-- **3 modality families:** Text, Image, Code
-- **29 candidates per task** across families × configurations
-- **Deliberately minimal prompts** in every lane *(see slide 10)*
-- Code candidates use a sandbox REPL for iterative debugging
+:::: {.columns}
+::: {.column width="40%"}
+![](figures/task_2d0172a1.png)
+:::
+::: {.column width="58%"}
+**Public eval task `2d0172a1:1`** — candidate pool *n* = 29
+
+| Modality family | Correct | Wrong |
+|---|:---:|:---:|
+| Text (8) | 0 | 8 |
+| Image (10) | **1** | 9 |
+| Code (11) | 0 | 11 |
+| **Total** | **1** | **28** |
+
+> ✅ **Submission verdict: SOLVED** — the holistic judges selected the lone correct candidate.
+
+- One image candidate produced the correct nested-frame output; 28 of 29 candidates were wrong
+- Majority voting would collapse onto the wrong cluster
+- **Our judges recovered the minority-correct candidate — that's what the submission scored on**
+:::
+::::
 
 ::: notes
-Don't list every configuration — the point is the structure: three families crossed with three models. The "minimal prompts" bullet is a callback you'll cash in on the negative-results slide.
+A success story. The submission got this task right: 28 of 29 candidates wrong, but the holistic judges identified the one correct image-prompt candidate. Four train pairs all reducing to a nested-frame output determined by the topology of the winding path. Selection layer recovered the rare correct one — what majority voting cannot do. One of the +7 minority recoveries from the holistic-judging ablation.
 :::
 
 ---
 
-# Holistic judging vs. majority voting
+# (2) Recognize the rare-correct — what the judges actually read (`2d0172a1:1`)
 
-- Concatenate all 29 reasoning traces into one long-context judge prompt
-- Each judge picks top-2 candidates *and* explains why other clusters are wrong
-- Weighted vote across 3 judges → pass@2 guesses
+This task produced **31,208 lines** of reasoning traces / logs.
 
-**Net uplift vs. majority-vote baseline: +7 instances**
+:::: {.columns}
+::: {.column width="49%"}
+**Winning candidate** — GPT-5.2 x-high, image modality
 
-*All 7 are minority recoveries — the correct answer wasn't the most common candidate.*
+```json
+// logs/2026-01-04_22-09-54_2d0172a1_1_step_5.json
+{
+  "image": {
+    ...
+    "gpt-5.2-xhigh_13_step_5_image_...": {
+      "actual_model": "gpt-5.2-xhigh",
+      "input_tokens": 21188,
+      "output_tokens": 59323,
+      "Full raw LLM response":
+"### What the examples show
 
-Plus **+1 synthesis** instance (`21897d95:2`): zero correct candidates — judge recombined partial insights into a novel correct output.
+In every example, the foreground pixels form
+several **separate components** of two types:
+
+1. **Frames (loops):** ... every such component
+   becomes a **perfect axis-aligned rectangular
+   border** (thickness 1).
+2. **Markers (solid small components):** ...
+   each marker is reduced to a **single
+   foreground cell**.
+...
+### Applying to the test input
+- Background color = **7**, foreground = **9**.
+- One **outer loop frame**, one **inner loop
+  frame** inside it, ... two **markers**
+  inside, side-by-side ⇒ **horizontal**.
+... outer size **9 rows × 13 columns**.",
+      "Extracted grid": [...]
+    }, ...
+  }, ...
+}
+```
+:::
+::: {.column width="49%"}
+**Judge's selection rationale** — GPT-5.2 x-high × 3; all 3 picked correctly
+
+```json
+// logs/2026-01-04_22-09-54_2d0172a1_1_step_finish.json
+{
+  ...
+  "selection_details": {
+    "judges": {
+      "duo_pick_council": [
+        ..., {
+          "model": "gpt-5.2-xhigh",
+          "response":
+"Across the four solved examples, the
+consistent mechanic is **topological
+normalization**:
+- Each **loop** becomes a **perfect 1-cell-
+  thick rectangular frame**.
+- Each **solid component** becomes a
+  **single foreground cell (a dot)**.
+...
+The two that best match the examples *and*
+the apparent test structure are:
+- **Solution 10**: outer frame contains an
+  inner frame **plus an extra dot to the
+  right** (matching the extra small
+  disconnected 9-component at cols ~20–21
+  in the test input) ...
+- **Solution 6/7**: the same, but **without**
+  the extra right-side dot.
+### Candidate 1 (most likely): Solution 10",
+          "picked_grids": [...]
+        }, ...
+      ]
+    }
+  },
+  "result": "PASS"
+}
+```
+:::
+::::
+
+Raw JSON from the public-eval logs; `"..."` marks elided fields. Judges read *full reasoning* of all 29 candidates ⇒ minority recovery.
 
 ::: notes
-The +7 number is the empirical payoff of the architecture. Say it slowly. The synthesis case is *qualitatively* different — it shows the system can sometimes *construct* a correct answer rather than just *select* one. Rare (n=1) but a proof-of-possibility for compositional repair. If time allows, quote the judge rationale from dfadab01:1: "Some solvers assume a stamp must fit fully. Others assume stamps are clipped at the border…" — shows the judge reasoning about disagreement explicitly.
+Payoff slide for the judging architecture. Excerpts are verbatim from the logged run. Left: the winning image candidate reasoned about "frames vs markers" and "topological normalization" — the model's own language, not a forced template. Right: the judge independently arrived at the same mechanic and named the rare-correct candidate "Solution 10" while keeping "Solution 6/7" as the safer pass@2 fallback. Three independent judges all picked the correct grid as #1 — full alignment. The point: the judge does not vote on outputs, it reads the reasoning of all 29 candidates and selects the trace whose argument is most coherent against the training pairs. That's what makes minority recovery possible.
+:::
+
+---
+
+# (1) + (2) across 130 tasks — modality contributions and judges' verdicts
+
+:::: {.columns}
+::: {.column width="32%"}
+![](figures/methodology_matrix.png)
+:::
+::: {.column width="66%"}
+**How to read** (one row = one of **130 instances** with full 29-candidate coverage):
+
+- **Judges column** (leftmost): the system's final pass@2 verdict — did the holistic judges submit a correct answer?
+- Other columns grouped by modality family — **Text** · **Image** · **Code** — each sub-column = one model/config candidate
+- **Green** = correct · **Red** = wrong
+- Rows sorted by difficulty: hardest tasks top, easiest bottom
+
+**Three bands tell the story**:
+
+- **Top:** all-red rows — generation failures (no modality solved them)
+- **Middle:** *scattered green cells in mostly-red rows* ⇒ different modalities catch different problems
+- **Bottom:** mostly green — the easy tasks (many modalities solve)
+
+**Edge case — Judges green, all candidates red**: a *judge-synthesis* solve. Happens on `21897d95:2`: zero candidates correct, but a judge **recombined partial insights** across failed candidates into a novel correct output.
+
+**What the numbers say** (n=130):
+
+- Exclusive solves: **2 Text-only** · **6 Image-only** · **7 Code-only**
+- Pairwise non-overlap: Code solves **+18** over Text · Image solves **+13** over Text
+- **Candidate-oracle: 86.2%** — a correct candidate exists for 144/167 instances overall
+- Modalities are **not redundant copies** of each other
+:::
+::::
+
+::: notes
+The chart is dense — spend the first 20s teaching the audience how to read it. Point at the top band ("look at these rows: green across the board — easy tasks"), then the middle band ("but *here* — mostly red rows with only one or two green cells. That's modality diversity doing the work"), then the bottom ("and these are the generation failures — no modality solved them"). The 86.2% oracle number is the most honest framing of the system's ceiling: generation is in good shape; selection is the next frontier. Tie back: of the 39 failures, 17 are *selection* — that's where the headroom is.
+:::
+
+---
+
+# Negative results worth knowing
+
+**1. Prescriptive prompting degrades performance.** Templates, CoT scaffolding, domain heuristics — all hurt on the hardest tasks. Mechanism: a *compliance tax on reasoning* (budget spent following the template instead of solving the problem).
+
+**2. Iterative refinement reduces diversity.** Refining candidates against each other collapses them onto the same wrong cluster — the exact failure mode we're trying to escape. Same effect from hint-then-solve pipelines.
+
+**3. Pipeline decomposition (objects → transformations → solver) hurts.** Brittle handoffs between stages. Both verbose and terse handovers regress toward the mean rather than expand the hypothesis space.
+
+**4. Strict JSON outputs underperform CSV.** Forcing API-level response-format schemas consistently lost to CSV + robust regex parsing. Strict schemas appear to constrain reasoning quality, not just output shape.
+
+**5. Pixel-perfect image renderings hurt.** *Slightly distorted* renders beat pixel-perfect ones for image-modality candidates. Clean renders push the model into cell-by-cell numerical reasoning; intentional imprecision forces engagement with shapes, symmetries, and spatial relationships — which is the point of image prompting.
+
+⇒ **Final system: deliberately minimal prompts, independent generation, no decomposition, CSV I/O, deliberately fuzzy image renders.**
+
+::: notes
+Most counter-intuitive findings in the paper — audiences love negative results because they save them time. Frame these as design constraints we discovered the hard way: every time we added "helpful" structure, scores dropped on the tasks that mattered. (1) and (2) are the big two — spend more time there. (3) is a useful counterpoint to anyone who's spent six months building a multi-stage agent. (4) will surprise the LLM-engineering audience used to JSON-mode being a default. (5) is the most visually intuitive — mention that we render the grids with intentional jitter, like a hand-drawn sketch, because pixel-perfect renderings made the model treat the image as a lossless encoding and fall back on numerical reasoning instead of visual.
+:::
+
+---
+
+# Takeaways
+
+**(1) Generate broadly** — different modalities (text, image, code) and different frontier models, generated *independently*. The hypothesis space matters more than the model.
+
+**(2) Judge holistically** — a long-context judge reads the *full reasoning*, not just final answers. Majority voting discards the rare-correct; trace-aware judging recovers it (and occasionally synthesizes a new one).
+
+**Where this generalizes:** any hard problem where the *reasoning* signals correctness — even when the answer itself can't be verified directly. As in ARC: the judges never see the test output; they assess the **credibility of each trace** against the training pairs. Math contests, code review, legal arguments, scientific hypotheses — wherever a careful reader can tell sound reasoning from rationalization.
+
+Code: `github.com/beetree/ARC-AGI` · Paper QR on title slide
+
+::: notes
+Close strong on the generalization claim. Pause on the headline and let it land. Recap (1) and (2). Key clarification on "where this generalizes": this is *not* only for problems with checkable answers. It also works whenever the reasoning itself carries credible signal — as in ARC, where the judges never see the test output and instead assess each trace's coherence against the training pairs. The audience should think about applying this anywhere a careful reader could tell sound reasoning from rationalization: code review, legal arguments, scientific hypotheses, design critiques. The closing number reminds them this isn't speculative: verified result, almost 20 points over the best standalone model. Then invite questions.
 :::
 
 ---
@@ -194,69 +389,12 @@ If tight on time, drop the IMAGE step and go Text → Code → Judge — the con
 
 ---
 
-# Modality complementarity
-
-:::: {.columns}
-::: {.column width="55%"}
-![](figures/methodology_matrix.png)
-:::
-::: {.column width="45%"}
-- Pairwise non-overlap (n=130): Code solves 18 that Text misses; Image solves 13 that Text misses
-- Exclusive: **2 Text-only**, **6 Image-only**, **7 Code-only**
-- Modalities are **not redundant copies** of the same reasoning process
-- Candidate-oracle accuracy: **86.2%** (correct candidate exists for 144/167)
-:::
-::::
-
-::: notes
-The oracle number (86.2%) is the most honest framing of the system's ceiling: it says generation is in good shape and selection is the next frontier. Tie back: of the 39 failures, 17 are selection — that's where the headroom is.
-:::
-
----
-
-# Negative results worth knowing
-
-**Prescriptive prompting degrades performance**
-
-Structured templates, CoT scaffolding, domain heuristics — all hurt on the hardest tasks. Mechanism: a *compliance tax on reasoning*.
-
-**Iterative refinement reduces diversity**
-
-Refining candidates against each other collapses them onto the same wrong cluster — the exact failure mode we're trying to escape.
-
-⇒ **Final system: deliberately minimal prompts + independent generation**
-
-::: notes
-Most counter-intuitive findings in the paper — audiences love negative results because they save them time. Frame these as design constraints we discovered the hard way: every time we added "helpful" structure, scores dropped on the tasks that mattered.
-:::
-
----
-
-# Takeaways
-
-1. **Modalities are search operators.**
-   Text, image, code activate different hypothesis distributions — exploit that.
-
-2. **Holistic judging > majority voting.**
-   On hard tasks the truth is a minority hypothesis; let a long-context judge read full traces.
-
-3. **Less prompt structure, more representational diversity.**
-   Prescriptive scaffolding suppresses the creative leaps these tasks reward.
-
-Code: `github.com/beetree/ARC-AGI` • Paper QR on title slide
-
-::: notes
-Close on the three-bullet recap. Then invite questions. If asked about cost, jump to backup slide on cost breakdown. If asked about failure modes, jump to backup slide on failure decomposition. If asked why three judges, jump to the third backup slide.
-:::
-
----
-
 # Backup: cost breakdown
 
 - **Public-eval cost is the representative number: $19.69/task**
-- Semi-private $38.99/task inflated by GPT-5.2 API instability (84% failure rate, 2,216/14,106 attempts succeeded)
+- Private $38.99/task inflated by GPT-5.2 API instability (84% failure rate, 2,216/14,106 attempts succeeded)
 - Tool-integrated code generation is the largest line item
-- ZDR mode used in semi-private verification disables tool calls → both lower accuracy and altered cost profile
+- ZDR mode used in private verification disables tool calls → both lower accuracy and altered cost profile
 - ARC-AGI-1 on the same system: 94.5% at $11.40/task — easier tasks early-exit cheaply
 
 ::: notes

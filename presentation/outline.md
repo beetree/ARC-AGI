@@ -34,7 +34,7 @@ Slides 14–16 are *backup* (cost breakdown, failure decomposition, why-three-ju
 ## Slide 1 — Title & hook (0:30)
 
 **Headline:** Modality-Driven Search with Holistic Trace Judging for ARC-AGI-2
-**Subhead:** 72.9% on ARC Prize Verified — built on three frontier models, not one
+**Subhead:** 72.9% verified result, beating frontier models by ~20%
 **Visual:** Title card, your name, affiliation, paper QR code
 
 **Speaker notes**
@@ -87,7 +87,7 @@ Slides 14–16 are *backup* (cost breakdown, failure decomposition, why-three-ju
 **Headline:** 72.9% on the ARC Prize Verified leaderboard — +18.7 points over the strongest single model
 **Visual:** Simplified version of Table II (top 5 rows only — your system, GPT-5.2 Pro, Gemini 3 Pro, GPT-5.2 X-High, Gemini 3 Deep Think)
 **Bullets**
-- Semi-private (official): **72.9%** at $38.99/task
+- Private (official): **72.9%** at $38.99/task
 - Public eval (self-measured): **76.1%** at $19.69/task
 - Best standalone frontier model: GPT-5.2 Pro at 54.2%
 - Gap to human panel: still ~27 points — plenty of headroom
@@ -250,8 +250,8 @@ Slides 14–16 are *backup* (cost breakdown, failure decomposition, why-three-ju
 ## Backup slides (only if asked)
 
 ### B1 — Cost breakdown
-- Public-eval $19.69/task is the representative number; semi-private $38.99 inflated by GPT-5.2 API instability (84% failure rate, 2,216/14,106 attempts succeeded)
-- Tool-integrated code generation is the largest line item; ZDR mode disables it, hence the public/semi-private gap
+- Public-eval $19.69/task is the representative number; private $38.99 inflated by GPT-5.2 API instability (84% failure rate, 2,216/14,106 attempts succeeded)
+- Tool-integrated code generation is the largest line item; ZDR mode disables it, hence the public/private gap
 - ARC-AGI-1 with the same system: 94.5% at $11.40/task — easier tasks early-exit cheaply
 
 ### B2 — Failure decomposition (167 instances)

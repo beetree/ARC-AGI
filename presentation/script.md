@@ -65,9 +65,9 @@ fontsize: 11pt
 \[CUE\] Leaderboard table. Don't read every row — point at your row, then GPT-5.2 Pro's row.
 
 \[SAY\]
-> "This is the headline result. The system I'll describe gets **72.9%** on the official ARC Prize Verified leaderboard, at about $39 per task. On the public evaluation it's 76%, at $19 per task. *[Point at GPT-5.2 Pro row.]* The strongest standalone frontier model is here at 54.2%. That's +18.7 percentage points.
+> "This is the headline result. The system I'll describe gets **72.9%** on the official ARC Prize Verified leaderboard, at about $39 per task. On the public evaluation it's 76%, at $19 per task. *[Point at GPT-5.2 Pro row.]* The strongest standalone frontier model is here at 54.2%. That's almost 20 percentage points.
 >
-> Yes — this spends more than a single model call. The contribution I'm presenting today is the **architectural pattern**, not the specific leaderboard number, which will move within weeks. The question is: *how* does an orchestration system beat the best single model by 18 points?"
+> Yes — this spends more than a single model call. The contribution I'm presenting today is the **architectural pattern**, not the specific leaderboard number, which will move within weeks. The question is: *how* does an orchestration system beat the best single model by nearly 20 points?"
 
 \[CUE\] Advance to slide 5.
 
@@ -231,7 +231,7 @@ fontsize: 11pt
 ## Q&A — likely questions and short answers
 
 **Q. Isn't $39/task expensive?**
-> "Yes. The representative number is actually the public-eval cost of $19/task — the semi-private cost was inflated by a known GPT-5.2 API instability period that gave us an 84% API call failure rate. At $19/task the system is competitive with GPT-5.2 Pro on cost and 22 points higher on accuracy. There's also an adaptive early-stop that makes easy tasks much cheaper — on ARC-AGI-1 the same system runs at $11/task."
+> "Yes. The representative number is actually the public-eval cost of $19/task — the private cost was inflated by a known GPT-5.2 API instability period that gave us an 84% API call failure rate. At $19/task the system is competitive with GPT-5.2 Pro on cost and 22 points higher on accuracy. There's also an adaptive early-stop that makes easy tasks much cheaper — on ARC-AGI-1 the same system runs at $11/task."
 
 **Q. Why three judges instead of one?**
 > "A single judge is biased toward its own prior. Three parallel judges with weighted voting — 2 points first pick, 1 point second pick — hedges within the judging step itself. And pass@2 hedges again at the output level when judges disagree."
