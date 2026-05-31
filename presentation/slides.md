@@ -73,7 +73,7 @@ header-includes: |
 \begin{column}{0.32\textwidth}
 \scriptsize
 \begin{itemize}\setlength\itemsep{0em}\setlength\leftmargini{0.8em}\setlength\topsep{0em}\setlength\parskip{0em}
-\item \textbf{2019} --- ARC-AGI-1 introduced (Chollet); trivial for humans, impossible for AI at the time
+\item \textbf{2019} --- ARC-AGI-1 introduced (Chollet); near-100\% human performance on calibrated tasks, near-zero from contemporary AI systems
 \item \textbf{2020--2023} --- Program synthesis era; top scores reach $\sim$20\% on ARC-AGI-1
 \item \textbf{Dec 2024} --- o3 saturates ARC-AGI-1 ($\sim$76\% at \$200/task), but only $\sim$3\% on ARC-AGI-2
 \item \textbf{2025} --- Focus shifts to ARC-AGI-2; top scores climb to $\sim$50\% (GPT-5.2, Opus 4.5)
@@ -142,31 +142,93 @@ This slide formalizes the protocol. The JSON example shows the audience exactly 
 
 ---
 
+# Recognized as new public SOTA by the ARC Prize team
+
+\begin{columns}[c]
+\begin{column}{0.5\textwidth}
+\centering
+\includegraphics[height=0.82\textheight,keepaspectratio]{figures/arcprize_announcement.png}
+\end{column}
+\begin{column}{0.47\textwidth}
+\large
+The \textbf{ARC Prize Foundation} publicly announced the submission as a \textbf{new public SOTA} (Feb 2026).
+
+\bigskip
+
+\normalsize
+\begin{itemize}\setlength\itemsep{0.5em}
+\item \emph{``New SOTA public submission to ARC-AGI''}
+\item \textbf{ARC-AGI-1:} 94.5\% at \$11.4/task
+\item \textbf{ARC-AGI-2:} 72.9\% at \$38.99/task
+\item Independent recognition --- announced by the foundation, not self-reported
+\end{itemize}
+\end{column}
+\end{columns}
+
+::: notes
+External-validation anchor before the numbers. This is the ARC Prize Foundation's own announcement of the submission as a new public state-of-the-art --- independent recognition, not a self-reported claim. The two numbers shown (V1 = ARC-AGI-1 at 94.5%, V2 = ARC-AGI-2 at 72.9%) are exactly the results we unpack on the next slide. Use this slide to establish credibility quickly, then move to the headline chart.
+:::
+
+---
+
 # The headline result
 
+\centering
+\includegraphics[width=0.93\linewidth,height=0.66\textheight,keepaspectratio]{figures/headline_results.png}
+
+\smallskip
+
+\footnotesize\textcolor{gray!70}{Best publicly reported results as of around Jan 2026, near the time of this submission --- the field has moved since.}
+
+\smallskip
+
+\fcolorbox{accent}{accentlight}{\parbox{0.62\linewidth}{\centering\large\bfseries\color{accent}+18.7 points over the strongest standalone frontier model at the time}}
+
+::: notes
+Anchor early — audience now knows there's a real result behind the method talk. Be honest about cost: this spends more than a single model call. The contribution is the architectural pattern, not the absolute leaderboard number — those move weekly. Pivot to the next slide with the question: how does an orchestration system beat a frontier model by 18 points?
+:::
+
+---
+
+# Where the leading Chinese models stand
+
 \begin{center}
-\begin{tabular}{lcc}
+\small
+\begin{tabular}{lllcccl}
 \hline
-\textbf{System} & \textbf{ARC-AGI-2} & \textbf{Cost/Task} \\
+\textbf{System} & \textbf{Author} & \textbf{Released} & \textbf{ARC-AGI-1} & \textbf{ARC-AGI-2} & \textbf{Cost/Task} & \textbf{Status} \\
 \hline
-Human Panel & 100.0\% & \$17.00 \\
-\textbf{This work (private)} & \textbf{72.9\%} & \$38.99 \\
-\textbf{This work (public eval)} & \textbf{76.1\%} & \$19.69 \\
-GPT-5.2 Pro (High) & 54.2\% & \$15.72 \\
-Opus 4.5 (Thinking, 64K) & 37.6\% & \$2.40 \\
-Gemini 3 Pro & 31.1\% & \$0.81 \\
+\textbf{This work} & --- & Dec 2025 & \textbf{94.5\%} & \textbf{72.9\%} & \$38.99 & \textcolor{successdark}{Verified} \\
+\hline
+\textit{DeepSeek V4 Pro-Max} & \textit{DeepSeek} & Apr 2026 & --- & \textit{46\%} & --- & \textcolor{warndark}{Not verified} \\
+Kimi K2.5 & Moonshot AI & Jan 2026 & 65.3\% & 11.8\% & \$0.28 & \textcolor{successdark}{Verified} \\
+Minimax M2.5 & Minimax & Feb 2026 & 63.7\% & 4.9\% & \$0.17 & \textcolor{successdark}{Verified} \\
+GLM-5 & Z.ai & Feb 2026 & 44.7\% & 4.9\% & \$0.27 & \textcolor{successdark}{Verified} \\
+DeepSeek V3.2 & DeepSeek & Dec 2025 & 57.0\% & 4.0\% & \$0.12 & \textcolor{successdark}{Verified} \\
+Qwen3-235B & Alibaba & Jul 2025 & 11.0\% & 1.3\% & \$0.004 & \textcolor{successdark}{Verified} \\
 \hline
 \end{tabular}
 \end{center}
 
+\smallskip
+\centering
+\footnotesize\textcolor{gray!70}{``Verified'' = listed on the official ARC Prize leaderboard. The DeepSeek V4 figure is an unofficial community result.}
+
+\bigskip
+\raggedright
+
+- Among **officially verified** results the strongest (Kimi K2.5) reaches **11.8%** --- most sit **below 5%** (an unofficial DeepSeek V4 figure aside)
+- These models are **strikingly cost-efficient** --- often 100--1000$\times$ cheaper --- and competitive on many benchmarks
+- But abstract, never-before-seen reasoning is where the gap is widest --- and where orchestration pays off
+
 \bigskip
 
 \begin{center}
-\fcolorbox{accent}{accentlight}{\parbox{0.7\linewidth}{\centering\large\bfseries\color{accent}+18.7 points over the strongest standalone frontier model}}
+\fcolorbox{accent}{accentlight}{\parbox{0.78\linewidth}{\centering\large\bfseries\color{accent}The method is model-agnostic --- the same architecture could lift these models too}}
 \end{center}
 
 ::: notes
-Anchor early — audience now knows there's a real result behind the method talk. Be honest about cost: this spends more than a single model call. The contribution is the architectural pattern, not the absolute leaderboard number — those move weekly. Pivot to the next slide with the question: how does an orchestration system beat a frontier model by 18 points?
+Context slide for an ICAIBD (Chinese-venue) audience: where do the leading domestic models land on this benchmark? The honest framing is two-sided. First: these models are remarkably cost-efficient --- Qwen3 is essentially free, Kimi/GLM/DeepSeek are all sub-\$0.30/task --- and they're genuinely competitive on most reasoning and coding benchmarks. Second: ARC-AGI-2 specifically targets fluid, novel abstraction, and that's where the gap is starkest --- best Chinese model 11.8\%, most under 5\%, versus 72.9\% here. The closing point matters: nothing in the architecture is tied to GPT/Gemini/Claude. The same modality-diverse generation + holistic judging could wrap these models. Don't oversell --- the candidate models here are frontier-class for a reason --- but the pattern transfers.
 :::
 
 ---
@@ -193,30 +255,77 @@ The architecture has to solve two problems, not one. First: counter the groupthi
 # (1) Break the groupthink --- modalities as search operators
 
 \begin{columns}[t]
+\setlength{\fboxsep}{0pt}
+%
 \begin{column}{0.32\textwidth}
 \centering
-{\Large\bfseries\color{accent}TEXT}\\[0.4em]
-\footnotesize Model reads the grid as numbers / strings
+\fcolorbox{accent}{white}{%
+\begin{minipage}[t][0.50\textheight][t]{\linewidth}
+\colorbox{accent}{\makebox[\linewidth][c]{\rule[-0.5em]{0pt}{1.7em}\color{white}\bfseries\large TEXT}}
+
+\vspace{0.8em}
+\centering
+{\ttfamily\fontsize{6.5pt}{8.4pt}\selectfont%
+0,0,0,0,0,0,0,3,3,3\\
+0,0,5,5,5,5,5,3,4,3\\
+0,5,0,0,0,0,0,3,3,3\\
+0,5,4,4,4,0,0,0,0,0\\
+5,0,4,2,4,0,0,6,6,6\\
+0,5,4,4,4,0,5,6,1,6\\
+\textcolor{gray}{$\vdots$}}
+
+\vfill
+{\footnotesize Reads the grid as\\ numbers / CSV}
+\vspace{0.7em}
+\end{minipage}}
 \end{column}
+%
 \begin{column}{0.32\textwidth}
 \centering
-{\Large\bfseries\color{accent}IMAGE}\\[0.4em]
-\footnotesize Model sees a rendered PNG of the grid
+\fcolorbox{accent}{white}{%
+\begin{minipage}[t][0.50\textheight][t]{\linewidth}
+\colorbox{accent}{\makebox[\linewidth][c]{\rule[-0.5em]{0pt}{1.7em}\color{white}\bfseries\large IMAGE}}
+
+\vspace{1.0em}
+\centering
+\includegraphics[height=0.205\textheight]{figures/modality_image_example.png}
+
+\vfill
+{\footnotesize Sees a rendered\\ PNG of the grid}
+\vspace{0.7em}
+\end{minipage}}
 \end{column}
+%
 \begin{column}{0.32\textwidth}
 \centering
-{\Large\bfseries\color{accent}CODE}\\[0.4em]
-\footnotesize Model writes Python to transform the grid
+\fcolorbox{accent}{white}{%
+\begin{minipage}[t][0.50\textheight][t]{\linewidth}
+\colorbox{accent}{\makebox[\linewidth][c]{\rule[-0.5em]{0pt}{1.7em}\color{white}\bfseries\large CODE}}
+
+\vspace{0.9em}
+\centering
+{\ttfamily\fontsize{6.5pt}{9.2pt}\selectfont
+\begin{tabular}{@{}l@{}}
+def solve(g):\\
+\hspace*{1.2em}objs = find\_objects(g)\\
+\hspace*{1.2em}rule = infer(objs)\\
+\hspace*{1.2em}return apply(rule, g)\\
+\end{tabular}}
+
+\vfill
+{\footnotesize Writes Python to\\ transform the grid}
+\vspace{0.7em}
+\end{minipage}}
 \end{column}
+%
 \end{columns}
 
-\bigskip
-\bigskip
+\vspace{0.7em}
+\centering
+\textcolor{accent}{\textbf{Same task, three representations $\rightarrow$ three different hypothesis distributions}}
 
-- Same task, three representations $\rightarrow$ three different hypothesis distributions
-- Each modality solves tasks the others miss
-- Generate **independently** --- don't pool prompts, don't share scaffolding
-- Diversity at the *representation* level, not just temperature
+\smallskip
+\footnotesize Each modality solves tasks the others miss $\cdot$ generated \textbf{independently} (no shared prompts or scaffolding) $\cdot$ diversity at the \emph{representation} level, not just temperature
 
 ::: notes
 This is the slide the audience should remember. Slow down. Use the word "operator" deliberately — frame it like classic AI search: each modality expands a different part of the hypothesis space. Concrete intuition: a model reading grids as numbers may notice arithmetic patterns vision misses; a code-writing pass forces a constructive rule the others can leave implicit. Promise the demo on slide 8.
@@ -534,14 +643,47 @@ Most counter-intuitive findings in the paper --- audiences love negative results
 
 \medskip
 
-\textbf{Where this generalizes:} any hard problem where the \emph{reasoning} signals correctness --- even when the answer itself can't be verified directly. As in ARC: the judges never see the test output; they assess the \textbf{credibility of each trace} against the training pairs. Math contests, code review, legal arguments, scientific hypotheses --- wherever a careful reader can tell sound reasoning from rationalization.
+\textbf{Potential for generalization} --- other hard problems where the \emph{reasoning}, not just the final answer, signals correctness. Candidate domains:
+
+\smallskip
+
+\begin{columns}[t]
+\begin{column}{0.48\textwidth}
+\begin{itemize}\setlength\itemsep{0.25em}
+\item Lemma discovery in mathematics
+\item Algorithm design for novel problems
+\item Causal inference from observational data
+\end{itemize}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{itemize}\setlength\itemsep{0.25em}
+\item Reverse engineering
+\item Scientific hypothesis generation
+\item Investment-thesis evaluation
+\end{itemize}
+\end{column}
+\end{columns}
 
 \bigskip
 \centering
 \footnotesize Code: \texttt{github.com/beetree/ARC-AGI} $\cdot$ Paper QR on title slide
 
 ::: notes
-Close strong on the generalization claim. Pause on the headline and let it land. Recap (1) and (2). The key clarification on "where this generalizes": this is \emph{not} only for problems with checkable answers (like math or formal proofs). It also works whenever the reasoning itself carries credible signal --- as in ARC, where the judges never see the test output and instead assess each trace's coherence against the training pairs. So the audience should think about applying this anywhere a careful reader could tell sound reasoning from rationalization: code review, legal arguments, scientific hypotheses, design critiques. The closing number reminds them this isn't speculative: verified result, almost 20 points over the best standalone model. Then invite questions. If asked about cost, jump to backup slide. If asked about failure modes, jump to failure-decomposition backup. If asked why three judges, jump to the third backup.
+Recap (1) and (2), then frame the generalization \emph{tentatively} --- as a possibility, not a proven claim. The point: this isn't only for problems with checkable answers (like math or formal proofs); it \emph{may} also help whenever the reasoning itself carries a credible signal --- as in ARC, where the judges never see the test output and instead assess each trace's coherence against the training pairs. Offer the examples (code review, scientific hypotheses, design critiques) as directions worth exploring, not as settled results --- we've only demonstrated it on ARC. Then invite questions. If asked about cost, jump to backup slide. If asked about failure modes, jump to failure-decomposition backup. If asked why three judges, jump to the third backup.
+:::
+
+---
+
+# {.plain}
+
+\vspace*{\fill}
+\begin{center}
+{\fontsize{46}{55}\selectfont\bfseries\color{accent}Questions?}
+\end{center}
+\vspace*{\fill}
+
+::: notes
+Closing slide --- open the floor. Point back to the backup slides for cost, failure decomposition, and the three-judge rationale if those questions come up.
 :::
 
 ---
